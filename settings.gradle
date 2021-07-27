@@ -1,2 +1,3 @@
 rootProject.name = "OKMock"
 include ':app'
+include ':okmock-annotations'
