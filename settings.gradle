@@ -2,3 +2,4 @@ rootProject.name = "OKMock"
 include ':app'
 include ':okmock-annotations'
 include ':okmock-compiler'
+include ':okmock-plugin'
