@@ -4,6 +4,10 @@ plugins {
     id 'kotlin-kapt'
 }
 
+if (isApplyPlugin) {
+    apply plugin: 'com.airsaid.okmock'
+}
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.0"
