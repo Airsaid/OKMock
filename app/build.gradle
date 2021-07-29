@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-kapt'
 }
 
 if (isApplyPlugin) {
@@ -48,5 +47,4 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     implementation project(":okmock-annotations")
-    kapt project(":okmock-compiler")
 }
