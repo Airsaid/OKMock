@@ -7,10 +7,10 @@ import com.android.build.api.transform.TransformInvocation
  */
 interface TransformHandle {
 
-  fun onTransformBefore(transformInvocation: TransformInvocation)
+  fun onTransformBefore(invocation: TransformInvocation)
 
-  fun onTransform(transformInvocation: TransformInvocation, bytecode: ByteArray): ByteArray
+  fun onTransform(invocation: TransformInvocation, bytecode: ByteArray): ByteArray
 
-  fun onTransformAfter(transformInvocation: TransformInvocation)
+  fun onTransformAfter(invocation: TransformInvocation)
 
 }
