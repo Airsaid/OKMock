@@ -25,6 +25,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compileOnly "com.android.tools.build:gradle:$agp_version"
     implementation 'org.ow2.asm:asm:9.2'
+//    implementation project(":okmock-api")
+    implementation "com.airsaid:okmock-api:1.0.0"
 }
 
 publishing {

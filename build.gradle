@@ -5,10 +5,8 @@ buildscript {
     ext.isApplyPlugin = true
     repositories {
         google()
+        mavenLocal()
         mavenCentral()
-        if (isApplyPlugin) {
-            mavenLocal()
-        }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$agp_version"
@@ -24,10 +22,8 @@ buildscript {
 allprojects {
     repositories {
         google()
+        mavenLocal()
         mavenCentral()
-        if (isApplyPlugin) {
-            mavenLocal()
-        }
     }
 }
 
