@@ -1,4 +1,4 @@
-package com.airsaid.okmock.annotations;
+package com.airsaid.okmock.api;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

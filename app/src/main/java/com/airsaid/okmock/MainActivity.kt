@@ -2,7 +2,7 @@ package com.airsaid.okmock
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.airsaid.okmock.annotations.Mock
+import com.airsaid.okmock.api.Mock
 
 class MainActivity : AppCompatActivity() {
 
