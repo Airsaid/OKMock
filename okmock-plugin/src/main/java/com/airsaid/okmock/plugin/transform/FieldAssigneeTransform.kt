@@ -53,11 +53,11 @@ class FieldAssigneeTransform(fields: List<FieldInfo>, className: String) : AbsTr
         assignments.forEach { (fieldInfo, pair) ->
           val className = pair.first
           val methodName = pair.second
-          val descriptor = fieldInfo.descriptor
-          println("fieldName: ${fieldInfo.name}, owner: ${fieldInfo.owner}, className: $className, methodName: $methodName, descriptor: $descriptor")
+          val fieldDescriptor = fieldInfo.descriptor
+          val methodDescriptor = Type.getMethodDescriptor(Type.getType(fieldDescriptor))
           mv.visitVarInsn(Opcodes.ALOAD, 0)
-          mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, methodName, "()$descriptor", false)
-          mv.visitFieldInsn(Opcodes.PUTFIELD, fieldInfo.owner, fieldInfo.name, descriptor)
+          mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, methodName, methodDescriptor, false)
+          mv.visitFieldInsn(Opcodes.PUTFIELD, fieldInfo.owner, fieldInfo.name, fieldDescriptor)
         }
       }
     }
