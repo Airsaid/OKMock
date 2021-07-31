@@ -46,3 +46,26 @@ fun Type.isFloatWrapType() = this.descriptor == "Ljava/lang/Float;"
 fun Type.isLongWrapType() = this.descriptor == "Ljava/lang/Long;"
 
 fun Type.isDoubleWrapType() = this.descriptor == "Ljava/lang/Double;"
+
+fun Type.isStringType() = this.descriptor == "Ljava/lang/String;"
+
+fun Type.toPrimitiveType(): Type {
+  if (isBooleanWrapType()) {
+    return Type.BOOLEAN_TYPE
+  } else if (isCharWrapType()) {
+    return Type.CHAR_TYPE
+  } else if (isByteWrapType()) {
+    return Type.BYTE_TYPE
+  } else if (isShortWrapType()) {
+    return Type.SHORT_TYPE
+  } else if (isIntWrapType()) {
+    return Type.INT_TYPE
+  } else if (isFloatWrapType()) {
+    return Type.FLOAT_TYPE
+  } else if (isLongWrapType()) {
+    return Type.LONG_TYPE
+  } else if (isDoubleWrapType()) {
+    return Type.DOUBLE_TYPE
+  }
+  throw IllegalArgumentException("$this is not a primitive wrap type.")
+}

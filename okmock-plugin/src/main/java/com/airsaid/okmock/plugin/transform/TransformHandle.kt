@@ -12,5 +12,4 @@ interface TransformHandle {
   fun onTransform(invocation: TransformInvocation, bytecode: ByteArray): ByteArray
 
   fun onTransformAfter(invocation: TransformInvocation)
-
 }
