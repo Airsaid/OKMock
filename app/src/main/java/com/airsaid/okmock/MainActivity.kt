@@ -2,54 +2,57 @@ package com.airsaid.okmock
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.airsaid.okmock.api.Mock
+import android.widget.TextView
 
+/**
+ * @author airsaid
+ */
 class MainActivity : AppCompatActivity() {
-
-  // 基本类型
-  @Mock
-  private var mMockBoolean: Boolean = false
-  @Mock
-  private var mMockByte: Byte = Byte.MIN_VALUE
-  @Mock
-  private var mMockShort: Short = Short.MIN_VALUE
-  @Mock
-  private var mMockInt: Int = Int.MIN_VALUE
-  @Mock
-  private var mMockLong: Long = Long.MIN_VALUE
-  @Mock
-  private var mMockFloat: Float = Float.MIN_VALUE
-  @Mock
-  private var mMockDouble: Double = Double.MIN_VALUE
-  @Mock
-  private var mMockChar: Char = Char.MIN_VALUE
-
-  // 引用类型
-  @Mock
-  private lateinit var mMockString: String
-  @Mock
-  private lateinit var mMockPerson: Person
-
-  // 引用集合
-  @Mock
-  private lateinit var mMockStrings: List<String>
-  @Mock
-  private lateinit var mMockPersons: Set<Person>
-  @Mock
-  private lateinit var mMockPersonMap: Map<Int, Person>
-
-  // 嵌套
-  @Mock
-  private lateinit var mMockParents: List<Parent>
-  @Mock
-  private lateinit var mMockParentMap: Map<Int, List<Parent>>
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
+
+    val mockData = JavaMockDataTest()
+
+    val strings = StringBuilder()
+      .append("mockBoolean: ${mockData.mockBool}")
+      .appendLine()
+      .append("mockBooleanWrap: ${mockData.mockBoolWrap}")
+      .appendLine()
+      .append("mockChar: ${mockData.mockChar}")
+      .appendLine()
+      .append("mockCharWrap: ${mockData.mockCharWrap}")
+      .appendLine()
+      .append("mockByte: ${mockData.mockByte}")
+      .appendLine()
+      .append("mockByteWrap: ${mockData.mockByteWrap}")
+      .appendLine()
+      .append("mockShort: ${mockData.mockShort}")
+      .appendLine()
+      .append("mockShortWrap: ${mockData.mockShortWrap}")
+      .appendLine()
+      .append("mockInt: ${mockData.mockInt}")
+      .appendLine()
+      .append("mockIntWrap: ${mockData.mockIntWrap}")
+      .appendLine()
+      .append("mockFloat: ${mockData.mockFloat}")
+      .appendLine()
+      .append("mockFloatWrap: ${mockData.mockFloatWrap}")
+      .appendLine()
+      .append("mockLong: ${mockData.mockLong}")
+      .appendLine()
+      .append("mockLongWrap: ${mockData.mockLongWrap}")
+      .appendLine()
+      .append("mockDouble: ${mockData.mockDouble}")
+      .appendLine()
+      .append("mockDoubleWrap: ${mockData.mockDoubleWrap}")
+      .appendLine()
+      .append("mockString: ${mockData.mockString}")
+      .appendLine()
+      .append("mockPerson: ${mockData.mockPerson}")
+      .appendLine()
+
+    findViewById<TextView>(R.id.textView).text = strings.toString()
   }
-
-  data class Person(val name: String, val age: Int)
-
-  data class Parent(val name: String, val age: Int, val children: List<Person>)
 }
