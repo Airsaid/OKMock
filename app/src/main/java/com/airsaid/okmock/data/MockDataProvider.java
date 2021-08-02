@@ -1,11 +1,18 @@
-package com.airsaid.okmock;
+package com.airsaid.okmock.data;
 
+import com.airsaid.okmock.OKMock;
 import com.airsaid.okmock.api.Mock;
+
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author airsaid
  */
-public class JavaMockDataTest {
+public class MockDataProvider {
   @Mock
   public boolean mockBool;
 
@@ -59,4 +66,34 @@ public class JavaMockDataTest {
 
   @Mock
   public Person mockPerson;
+
+  @Mock
+  public Group mockGroup;
+
+  @Mock
+  public List<String> mockList;
+
+  @Mock
+  public LinkedList<String> mockList2;
+
+  @Mock
+  public Set<String> mockSet;
+
+  @Mock
+  public LinkedHashSet<String> mockSet2;
+
+  @Mock
+  public Map<Integer, String> mockMap;
+
+  @Mock
+  public Map<Integer, Person> mockMap2;
+
+  @Mock
+  public List<List<String>> mockNested;
+
+  @Mock
+  public List<List<Set<String>>> mockNested2;
+
+  @Mock
+  public Map<Integer, List<OKMock>> mockNested3;
 }
