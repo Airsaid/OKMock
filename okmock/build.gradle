@@ -12,7 +12,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             groupId = 'com.airsaid'
-            artifactId = 'okmock-api'
+            artifactId = 'okmock'
             version = '1.0.0'
 
             from components.java
