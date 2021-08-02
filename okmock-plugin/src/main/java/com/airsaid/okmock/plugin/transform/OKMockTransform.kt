@@ -1,11 +1,13 @@
 package com.airsaid.okmock.plugin.transform
 
-import android.databinding.tool.ext.capitalizeUS
 import com.airsaid.okmock.api.Mock
 import com.airsaid.okmock.plugin.OKMockPlugin
+import com.airsaid.okmock.plugin.constant.Constants.GET_MOCK_DATA_METHOD_DESCRIPTOR
+import com.airsaid.okmock.plugin.constant.Constants.GET_MOCK_DATA_METHOD_NAME
 import com.airsaid.okmock.plugin.constant.Constants.OK_MOCK_CLASS_NAME
 import com.airsaid.okmock.plugin.model.FieldInfo
-import com.airsaid.okmock.plugin.util.*
+import com.airsaid.okmock.plugin.util.isPrimitiveType
+import com.airsaid.okmock.plugin.util.toPrimitiveWrapType
 import com.android.build.api.transform.TransformInvocation
 import org.objectweb.asm.*
 import org.objectweb.asm.Opcodes.*
@@ -89,52 +91,29 @@ class OKMockTransform : AbstractTransform() {
 
       private fun assignFields() {
         fields.forEach { fieldInfo ->
-          val fieldDescriptor = fieldInfo.descriptor
-          val fieldType = Type.getType(fieldDescriptor)
-          println("fieldType: $fieldType")
+          val fieldType = Type.getType(fieldInfo.descriptor)
+          val referenceDescriptor = if (fieldType.isPrimitiveType())
+            fieldType.toPrimitiveWrapType().descriptor else fieldInfo.descriptor
+          val referenceType = Type.getType(referenceDescriptor)
+          val signature = fieldInfo.signature
+          val methodParams = if (signature != null && signature.isNotEmpty())
+            signature else fieldInfo.descriptor
+
+          mv.visitVarInsn(ALOAD, 0)
+          mv.visitLdcInsn(methodParams)
+          mv.visitMethodInsn(
+            INVOKESTATIC, OK_MOCK_CLASS_NAME,
+            GET_MOCK_DATA_METHOD_NAME, GET_MOCK_DATA_METHOD_DESCRIPTOR, false
+          )
+          mv.visitTypeInsn(CHECKCAST, referenceType.internalName)
           if (fieldType.isPrimitiveType()) {
-            assignPrimitiveType(mv, fieldInfo, fieldType)
-          } else if (fieldType.isPrimitiveWrapType()) {
-            assignPrimitiveWrapType(mv, fieldInfo, fieldType)
-          } else if (fieldType.isStringType()) {
-            assignStringType(mv, fieldInfo, fieldType)
-          } else {
-            assignPojoType(mv, fieldInfo, fieldType)
+            mv.visitMethodInsn(
+              INVOKEVIRTUAL, referenceType.internalName,
+              "${fieldType.className}Value", Type.getMethodDescriptor(fieldType), false
+            )
           }
+          mv.visitFieldInsn(PUTFIELD, fieldInfo.owner, fieldInfo.name, fieldInfo.descriptor)
         }
-      }
-
-      private fun assignPrimitiveType(mv: MethodVisitor, fieldInfo: FieldInfo, fieldType: Type) {
-        mv.visitVarInsn(ALOAD, 0)
-        val methodName = "get${fieldType.className.capitalizeUS()}"
-        val methodDescriptor = Type.getMethodDescriptor(fieldType)
-        mv.visitMethodInsn(INVOKESTATIC, OK_MOCK_CLASS_NAME, methodName, methodDescriptor, false)
-        mv.visitFieldInsn(PUTFIELD, fieldInfo.owner, fieldInfo.name, fieldType.descriptor)
-      }
-
-      private fun assignPrimitiveWrapType(mv: MethodVisitor, fieldInfo: FieldInfo, fieldType: Type) {
-        mv.visitVarInsn(ALOAD, 0)
-        val methodName = "get${fieldType.toPrimitiveType().className.capitalizeUS()}"
-        val methodDescriptor = Type.getMethodDescriptor(fieldType.toPrimitiveType())
-        val valueOfMethodDesc = Type.getMethodDescriptor(fieldType, fieldType.toPrimitiveType())
-        mv.visitMethodInsn(INVOKESTATIC, OK_MOCK_CLASS_NAME, methodName, methodDescriptor, false)
-        mv.visitMethodInsn(INVOKESTATIC, fieldType.internalName, "valueOf", valueOfMethodDesc, false)
-        mv.visitFieldInsn(PUTFIELD, fieldInfo.owner, fieldInfo.name, fieldType.descriptor)
-      }
-
-      private fun assignStringType(mv: MethodVisitor, fieldInfo: FieldInfo, fieldType: Type) {
-        mv.visitVarInsn(ALOAD, 0)
-        val methodDescriptor = Type.getMethodDescriptor(fieldType)
-        mv.visitMethodInsn(INVOKESTATIC, OK_MOCK_CLASS_NAME, "getString", methodDescriptor, false)
-        mv.visitFieldInsn(PUTFIELD, fieldInfo.owner, fieldInfo.name, fieldType.descriptor)
-      }
-
-      private fun assignPojoType(mv: MethodVisitor, fieldInfo: FieldInfo, fieldType: Type) {
-        mv.visitVarInsn(ALOAD, 0)
-        mv.visitLdcInsn(fieldType)
-        mv.visitMethodInsn(INVOKESTATIC, OK_MOCK_CLASS_NAME, "getPojo", "(Ljava/lang/Class;)Ljava/lang/Object;", false)
-        mv.visitTypeInsn(CHECKCAST, fieldType.internalName)
-        mv.visitFieldInsn(PUTFIELD, fieldInfo.owner, fieldInfo.name, fieldType.descriptor)
       }
     }
   }

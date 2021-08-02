@@ -69,3 +69,24 @@ fun Type.toPrimitiveType(): Type {
   }
   throw IllegalArgumentException("$this is not a primitive wrap type.")
 }
+
+fun Type.toPrimitiveWrapType(): Type {
+  if (this == Type.BOOLEAN_TYPE) {
+    return Type.getType("Ljava/lang/Boolean;")
+  } else if (this == Type.CHAR_TYPE) {
+    return Type.getType("Ljava/lang/Character;")
+  } else if (this == Type.BYTE_TYPE) {
+    return Type.getType("Ljava/lang/Byte;")
+  } else if (this == Type.SHORT_TYPE) {
+    return Type.getType("Ljava/lang/Short;")
+  } else if (this == Type.INT_TYPE) {
+    return Type.getType("Ljava/lang/Integer;")
+  } else if (this == Type.FLOAT_TYPE) {
+    return Type.getType("Ljava/lang/Float;")
+  } else if (this == Type.LONG_TYPE) {
+    return Type.getType("Ljava/lang/Long;")
+  } else if (this == Type.DOUBLE_TYPE) {
+    return Type.getType("Ljava/lang/Double;")
+  }
+  throw IllegalArgumentException("$this is not a primitive type.")
+}
