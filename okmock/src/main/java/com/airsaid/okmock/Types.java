@@ -1,4 +1,4 @@
-package com.airsaid.okmock.api;
+package com.airsaid.okmock;
 
 import java.lang.reflect.Type;
 
