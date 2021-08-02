@@ -28,20 +28,28 @@ public class OKMock {
   private static String getReferenceType(String descriptor) {
     switch (descriptor) {
       case "Z":
+      case "boolean":
         return "Ljava/lang/Boolean;";
       case "C":
+      case "char":
         return "Ljava/lang/Character;";
       case "B":
+      case "byte":
         return "Ljava/lang/Byte;";
       case "S":
+      case "short":
         return "Ljava/lang/Short;";
       case "I":
+      case "int":
         return "Ljava/lang/Integer;";
       case "F":
+      case "float":
         return "Ljava/lang/Float;";
       case "J":
+      case "long":
         return "Ljava/lang/Long;";
       case "D":
+      case "double":
         return "Ljava/lang/Double;";
     }
     return descriptor;
@@ -140,10 +148,6 @@ public class OKMock {
       }
       return mapInstance;
     } else {
-      // com.airsaid.Person
-      // java.lang.Util
-      //
-
       return getPojo(clazz);
     }
   }
@@ -279,7 +283,12 @@ public class OKMock {
     Object[] result = new Object[parameterTypes.length];
     for (int i = 0; i < parameterTypes.length; i++) {
       Type parameterType = parameterTypes[i];
-      // TODO: 2021/8/2
+      if (parameterType instanceof Class<?>) {
+        String className = ((Class<?>) parameterType).getName();
+        result[i] = getMockData(className);
+      } else {
+        result[i] = getMockData(parameterType.toString().replace(",", ";").replace(" ", ""));
+      }
     }
     return result;
   }
