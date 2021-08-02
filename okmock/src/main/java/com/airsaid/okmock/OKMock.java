@@ -55,7 +55,7 @@ public class OKMock {
     return descriptor;
   }
 
-  public static List<String> formatSignature(String signature) {
+  private static List<String> formatSignature(String signature) {
     List<String> result = new ArrayList<>();
     StringBuilder className = new StringBuilder();
     char[] chars = signature.toCharArray();
@@ -148,7 +148,7 @@ public class OKMock {
       }
       return mapInstance;
     } else {
-      return getPojo(clazz);
+      return getBean(clazz);
     }
   }
 
@@ -240,7 +240,7 @@ public class OKMock {
     }
   }
 
-  protected static int findMapPartitionIndex(List<String> formatSignature, int start, int end) {
+  private static int findMapPartitionIndex(List<String> formatSignature, int start, int end) {
     int firstIndex = -1;
     for (int i = start; i <= end; i++) {
       String format = formatSignature.get(i);
@@ -255,7 +255,7 @@ public class OKMock {
   }
 
   @SuppressWarnings(value = "unchecked")
-  private static <T> T getPojo(Class<T> clazz) {
+  private static <T> T getBean(Class<T> clazz) {
     Constructor<?> constructor = getMaxParamsConstructor(clazz);
     Type[] parameterTypes = constructor.getGenericParameterTypes();
     try {
