@@ -6,21 +6,17 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 /**
  * @author airsaid
  */
 public class OKMock {
-
-  private static final Random random = new Random();
 
   public static Object getMockData(String signature) {
     signature = getReferenceType(signature);
@@ -146,8 +142,9 @@ public class OKMock {
       Object value = getInstanceRecursively(formatSignatures, mapPartitionIndex + 1, end);
       if (key != null && value != null) {
         mapInstance.put(key, value);
-        mapInstance.put(getInstanceRecursively(formatSignatures, start + 1, mapPartitionIndex),
-            getInstanceRecursively(formatSignatures, mapPartitionIndex + 1, end));
+        randomForEach(index ->
+            mapInstance.put(getInstanceRecursively(formatSignatures, start + 1, mapPartitionIndex),
+                getInstanceRecursively(formatSignatures, mapPartitionIndex + 1, end)));
       }
       return mapInstance;
     } else {
@@ -168,41 +165,39 @@ public class OKMock {
   }
 
   private static boolean getRandomBoolean() {
-    return random.nextBoolean();
+    return RandomUtils.nextBoolean();
   }
 
   private static char getRandomChar() {
-    return (char) randomInt(49, 122);
+    return (char) RandomUtils.nextInt(49, 122);
   }
 
   private static byte getRandomByte() {
-    return (byte) randomInt(Byte.MIN_VALUE, Byte.MAX_VALUE);
+    return (byte) RandomUtils.nextInt(Byte.MIN_VALUE, Byte.MAX_VALUE);
   }
 
   private static short getRandomShort() {
-    return (short) randomInt(Short.MIN_VALUE, Short.MAX_VALUE);
+    return (short) RandomUtils.nextInt(Short.MIN_VALUE, Short.MAX_VALUE);
   }
 
   private static int getRandomInt() {
-    return random.nextInt();
+    return RandomUtils.nextInt();
   }
 
   private static float getRandomFloat() {
-    return random.nextFloat();
+    return RandomUtils.nextFloat();
   }
 
   private static long getRandomLong() {
-    return random.nextLong();
+    return RandomUtils.nextLong();
   }
 
   private static double getRandomDouble() {
-    return random.nextDouble();
+    return RandomUtils.nextDouble();
   }
 
   private static String getRandomString() {
-    byte[] bytes = new byte[randomInt(1, 100)];
-    random.nextBytes(bytes);
-    return new String(bytes, StandardCharsets.UTF_8);
+    return RandomStringUtils.random(RandomUtils.nextInt(1, 100), true, true);
   }
 
   @SuppressWarnings("unchecked")
@@ -238,7 +233,7 @@ public class OKMock {
   }
 
   private static void randomForEach(IntConsumer consumer) {
-    for (int i = 0; i <= randomInt(1, 100); i++) {
+    for (int i = 0; i <= RandomUtils.nextInt(1, 50); i++) {
       consumer.accept(i);
     }
   }
@@ -318,41 +313,36 @@ public class OKMock {
       MockValue mockValue = (MockValue) annotation;
       if (Boolean.TYPE.isAssignableFrom(parameter) || Boolean.class.isAssignableFrom(parameter)) {
         boolean[] booleanValues = mockValue.booleanValues();
-        return booleanValues[random.nextInt(booleanValues.length)];
+        return booleanValues[RandomUtils.nextInt(0, booleanValues.length)];
       } else if (Character.TYPE.isAssignableFrom(parameter) || Character.class.isAssignableFrom(parameter)) {
         char[] charValues = mockValue.charValues();
-        return charValues[random.nextInt(charValues.length)];
+        return charValues[RandomUtils.nextInt(0, charValues.length)];
       } else if (Byte.TYPE.isAssignableFrom(parameter) || Byte.class.isAssignableFrom(parameter)) {
         byte[] byteValues = mockValue.byteValues();
-        return byteValues[random.nextInt(byteValues.length)];
+        return byteValues[RandomUtils.nextInt(0, byteValues.length)];
       } else if (Short.TYPE.isAssignableFrom(parameter) || Short.class.isAssignableFrom(parameter)) {
         short[] shortValues = mockValue.shortValues();
-        return shortValues[random.nextInt(shortValues.length)];
+        return shortValues[RandomUtils.nextInt(0, shortValues.length)];
       } else if (Integer.TYPE.isAssignableFrom(parameter) || Integer.class.isAssignableFrom(parameter)) {
         int[] intValues = mockValue.intValues();
-        return intValues[random.nextInt(intValues.length)];
+        return intValues[RandomUtils.nextInt(0, intValues.length)];
       } else if (Float.TYPE.isAssignableFrom(parameter) || Float.class.isAssignableFrom(parameter)) {
         float[] floatValues = mockValue.floatValues();
-        return floatValues[random.nextInt(floatValues.length)];
+        return floatValues[RandomUtils.nextInt(0, floatValues.length)];
       } else if (Long.TYPE.isAssignableFrom(parameter) || Long.class.isAssignableFrom(parameter)) {
         long[] longValues = mockValue.longValues();
-        return longValues[random.nextInt(longValues.length)];
+        return longValues[RandomUtils.nextInt(0, longValues.length)];
       } else if (Double.TYPE.isAssignableFrom(parameter) || Double.class.isAssignableFrom(parameter)) {
         double[] doubleValues = mockValue.doubleValues();
-        return doubleValues[random.nextInt(doubleValues.length)];
+        return doubleValues[RandomUtils.nextInt(0, doubleValues.length)];
       } else if (String.class.isAssignableFrom(parameter)) {
         String[] stringValues = mockValue.stringValues();
-        return stringValues[random.nextInt(stringValues.length)];
+        return stringValues[RandomUtils.nextInt(0, stringValues.length)];
       } else {
         return null;
       }
     }
     return null;
-  }
-
-  private static int randomInt(int min, int max) {
-    int upperBound = max - min + 1;
-    return min + random.nextInt(upperBound);
   }
 
   @FunctionalInterface
