@@ -1,5 +1,8 @@
 package com.airsaid.okmock;
 
+import com.airsaid.okmock.api.MockValue;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
@@ -258,8 +261,9 @@ public class OKMock {
   private static <T> T getBean(Class<T> clazz) {
     Constructor<?> constructor = getMaxParamsConstructor(clazz);
     Type[] parameterTypes = constructor.getGenericParameterTypes();
+    Annotation[][] parameterAnnotations = constructor.getParameterAnnotations();
     try {
-      return (T) constructor.newInstance(getParameters(parameterTypes));
+      return (T) constructor.newInstance(getParameters(parameterTypes, parameterAnnotations));
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
       throw new RuntimeException(e.getCause());
     }
@@ -279,10 +283,17 @@ public class OKMock {
     return result;
   }
 
-  private static Object[] getParameters(Type[] parameterTypes) {
+  private static Object[] getParameters(Type[] parameterTypes, Annotation[][] parameterAnnotations) {
     Object[] result = new Object[parameterTypes.length];
     for (int i = 0; i < parameterTypes.length; i++) {
       Type parameterType = parameterTypes[i];
+      Annotation[] parameterAnnotation = parameterAnnotations[i];
+      Object parameter = getParameterForAnnotation(parameterType, parameterAnnotation);
+      if (parameter != null) {
+        result[i] = parameter;
+        continue;
+      }
+
       if (parameterType instanceof Class<?>) {
         String className = ((Class<?>) parameterType).getName();
         result[i] = getMockData(className);
@@ -291,6 +302,52 @@ public class OKMock {
       }
     }
     return result;
+  }
+
+  private static Object getParameterForAnnotation(Type parameterType, Annotation[] parameterAnnotations) {
+    if (!(parameterType instanceof Class<?>)) {
+      return null;
+    }
+    Class<?> parameter = (Class<?>) parameterType;
+
+    for (Annotation annotation : parameterAnnotations) {
+      if (!(annotation instanceof MockValue)) {
+        continue;
+      }
+
+      MockValue mockValue = (MockValue) annotation;
+      if (Boolean.TYPE.isAssignableFrom(parameter) || Boolean.class.isAssignableFrom(parameter)) {
+        boolean[] booleanValues = mockValue.booleanValues();
+        return booleanValues[random.nextInt(booleanValues.length)];
+      } else if (Character.TYPE.isAssignableFrom(parameter) || Character.class.isAssignableFrom(parameter)) {
+        char[] charValues = mockValue.charValues();
+        return charValues[random.nextInt(charValues.length)];
+      } else if (Byte.TYPE.isAssignableFrom(parameter) || Byte.class.isAssignableFrom(parameter)) {
+        byte[] byteValues = mockValue.byteValues();
+        return byteValues[random.nextInt(byteValues.length)];
+      } else if (Short.TYPE.isAssignableFrom(parameter) || Short.class.isAssignableFrom(parameter)) {
+        short[] shortValues = mockValue.shortValues();
+        return shortValues[random.nextInt(shortValues.length)];
+      } else if (Integer.TYPE.isAssignableFrom(parameter) || Integer.class.isAssignableFrom(parameter)) {
+        int[] intValues = mockValue.intValues();
+        return intValues[random.nextInt(intValues.length)];
+      } else if (Float.TYPE.isAssignableFrom(parameter) || Float.class.isAssignableFrom(parameter)) {
+        float[] floatValues = mockValue.floatValues();
+        return floatValues[random.nextInt(floatValues.length)];
+      } else if (Long.TYPE.isAssignableFrom(parameter) || Long.class.isAssignableFrom(parameter)) {
+        long[] longValues = mockValue.longValues();
+        return longValues[random.nextInt(longValues.length)];
+      } else if (Double.TYPE.isAssignableFrom(parameter) || Double.class.isAssignableFrom(parameter)) {
+        double[] doubleValues = mockValue.doubleValues();
+        return doubleValues[random.nextInt(doubleValues.length)];
+      } else if (String.class.isAssignableFrom(parameter)) {
+        String[] stringValues = mockValue.stringValues();
+        return stringValues[random.nextInt(stringValues.length)];
+      } else {
+        return null;
+      }
+    }
+    return null;
   }
 
   private static int randomInt(int min, int max) {
