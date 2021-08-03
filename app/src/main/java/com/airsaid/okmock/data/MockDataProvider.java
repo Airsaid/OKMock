@@ -71,28 +71,28 @@ public class MockDataProvider {
   public Group mockGroup;
 
   @Mock
-  public List<String> mockList;
+  public List<Person> mockList;
 
   @Mock
-  public LinkedList<String> mockList2;
+  public LinkedList<Integer> mockList2;
 
   @Mock
-  public Set<String> mockSet;
+  public Set<Integer> mockSet;
 
   @Mock
   public LinkedHashSet<String> mockSet2;
 
   @Mock
-  public Map<Integer, String> mockMap;
+  public Map<Integer, Integer> mockMap;
 
   @Mock
   public Map<Integer, Person> mockMap2;
 
   @Mock
-  public List<List<String>> mockNested;
+  public List<List<Integer>> mockNested;
 
   @Mock
-  public List<List<Set<String>>> mockNested2;
+  public List<List<Set<Integer>>> mockNested2;
 
   @Mock
   public Map<Integer, List<OKMock>> mockNested3;
