@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * @author airsaid
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.FIELD)
 public @interface Mock {
 
