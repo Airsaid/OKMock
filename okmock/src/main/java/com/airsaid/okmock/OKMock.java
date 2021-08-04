@@ -19,39 +19,9 @@ import java.util.Set;
 public class OKMock {
 
   public static Object getMockData(String signature) {
-    signature = getReferenceType(signature);
+    signature = TypeUtils.getReferenceTypeDescriptor(signature);
     List<String> formatSignatures = formatSignature(signature);
     return getInstanceRecursively(formatSignatures, 0, formatSignatures.size() - 1);
-  }
-
-  private static String getReferenceType(String descriptor) {
-    switch (descriptor) {
-      case "Z":
-      case "boolean":
-        return "Ljava/lang/Boolean;";
-      case "C":
-      case "char":
-        return "Ljava/lang/Character;";
-      case "B":
-      case "byte":
-        return "Ljava/lang/Byte;";
-      case "S":
-      case "short":
-        return "Ljava/lang/Short;";
-      case "I":
-      case "int":
-        return "Ljava/lang/Integer;";
-      case "F":
-      case "float":
-        return "Ljava/lang/Float;";
-      case "J":
-      case "long":
-        return "Ljava/lang/Long;";
-      case "D":
-      case "double":
-        return "Ljava/lang/Double;";
-    }
-    return descriptor;
   }
 
   private static List<String> formatSignature(String signature) {
@@ -288,13 +258,7 @@ public class OKMock {
         result[i] = parameter;
         continue;
       }
-
-      if (parameterType instanceof Class<?>) {
-        String className = ((Class<?>) parameterType).getName();
-        result[i] = getMockData(className);
-      } else {
-        result[i] = getMockData(parameterType.toString().replace(",", ";").replace(" ", ""));
-      }
+      result[i] = getMockData(TypeUtils.getTypeDescriptor(parameterType));
     }
     return result;
   }
