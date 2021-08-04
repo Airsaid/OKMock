@@ -84,6 +84,7 @@ class OKMockTransform : AbstractTransform() {
     ) : MethodVisitor(ASM9, mv) {
       override fun visitMethodInsn(opcode: Int, owner: String?, name: String?, descriptor: String?, isInterface: Boolean) {
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
+        // Add field's assignment in the construction method
         if (opcode == INVOKESPECIAL && name.equals("<init>")) {
           assignFields()
         }
