@@ -17,7 +17,90 @@ public class TypeUtilsTest {
 
   @Test
   public void getReferenceTypeDescriptor() {
-    // primitive type
+    assertEquals("Ljava/lang/String;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/String;"));
+    assertEquals("Ljava/lang/List;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/List;"));
+
+    assertEquals("[Ljava/lang/String;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/String;"));
+    assertEquals("[Ljava/lang/List;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/List;"));
+
+    assertEquals("[[Ljava/lang/String;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/String;"));
+    assertEquals("[[Ljava/lang/List;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/List;"));
+  }
+
+  @Test
+  public void getReferenceTypeDescriptorByPrimitiveType() {
+    assertEquals("Ljava/lang/Boolean;", TypeUtils.getReferenceTypeDescriptor("Z"));
+    assertEquals("Ljava/lang/Character;", TypeUtils.getReferenceTypeDescriptor("C"));
+    assertEquals("Ljava/lang/Byte;", TypeUtils.getReferenceTypeDescriptor("B"));
+    assertEquals("Ljava/lang/Short;", TypeUtils.getReferenceTypeDescriptor("S"));
+    assertEquals("Ljava/lang/Integer;", TypeUtils.getReferenceTypeDescriptor("I"));
+    assertEquals("Ljava/lang/Float;", TypeUtils.getReferenceTypeDescriptor("F"));
+    assertEquals("Ljava/lang/Long;", TypeUtils.getReferenceTypeDescriptor("J"));
+    assertEquals("Ljava/lang/Double;", TypeUtils.getReferenceTypeDescriptor("D"));
+  }
+
+  @Test
+  public void getReferenceTypeDescriptorByPrimitiveArrayType() {
+    assertEquals("[Ljava/lang/Boolean;", TypeUtils.getReferenceTypeDescriptor("[Z"));
+    assertEquals("[Ljava/lang/Character;", TypeUtils.getReferenceTypeDescriptor("[C"));
+    assertEquals("[Ljava/lang/Byte;", TypeUtils.getReferenceTypeDescriptor("[B"));
+    assertEquals("[Ljava/lang/Short;", TypeUtils.getReferenceTypeDescriptor("[S"));
+    assertEquals("[Ljava/lang/Integer;", TypeUtils.getReferenceTypeDescriptor("[I"));
+    assertEquals("[Ljava/lang/Float;", TypeUtils.getReferenceTypeDescriptor("[F"));
+    assertEquals("[Ljava/lang/Long;", TypeUtils.getReferenceTypeDescriptor("[J"));
+    assertEquals("[Ljava/lang/Double;", TypeUtils.getReferenceTypeDescriptor("[D"));
+  }
+
+  @Test
+  public void getReferenceTypeDescriptorByPrimitiveDimensionArrayType() {
+    assertEquals("[[Ljava/lang/Boolean;", TypeUtils.getReferenceTypeDescriptor("[[Z"));
+    assertEquals("[[Ljava/lang/Character;", TypeUtils.getReferenceTypeDescriptor("[[C"));
+    assertEquals("[[Ljava/lang/Byte;", TypeUtils.getReferenceTypeDescriptor("[[B"));
+    assertEquals("[[Ljava/lang/Short;", TypeUtils.getReferenceTypeDescriptor("[[S"));
+    assertEquals("[[Ljava/lang/Integer;", TypeUtils.getReferenceTypeDescriptor("[[I"));
+    assertEquals("[[Ljava/lang/Float;", TypeUtils.getReferenceTypeDescriptor("[[F"));
+    assertEquals("[[Ljava/lang/Long;", TypeUtils.getReferenceTypeDescriptor("[[J"));
+    assertEquals("[[Ljava/lang/Double;", TypeUtils.getReferenceTypeDescriptor("[[D"));
+  }
+
+  @Test
+  public void getReferenceTypeDescriptorByPrimitiveWrapType() {
+    assertEquals("Ljava/lang/Boolean;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Boolean;"));
+    assertEquals("Ljava/lang/Character;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Character;"));
+    assertEquals("Ljava/lang/Byte;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Byte;"));
+    assertEquals("Ljava/lang/Short;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Short;"));
+    assertEquals("Ljava/lang/Integer;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Integer;"));
+    assertEquals("Ljava/lang/Float;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Float;"));
+    assertEquals("Ljava/lang/Long;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Long;"));
+    assertEquals("Ljava/lang/Double;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Double;"));
+  }
+
+  @Test
+  public void getReferenceTypeDescriptorByPrimitiveWrapArrayType() {
+    assertEquals("[Ljava/lang/Boolean;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Boolean;"));
+    assertEquals("[Ljava/lang/Character;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Character;"));
+    assertEquals("[Ljava/lang/Byte;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Byte;"));
+    assertEquals("[Ljava/lang/Short;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Short;"));
+    assertEquals("[Ljava/lang/Integer;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Integer;"));
+    assertEquals("[Ljava/lang/Float;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Float;"));
+    assertEquals("[Ljava/lang/Long;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Long;"));
+    assertEquals("[Ljava/lang/Double;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Double;"));
+  }
+
+  @Test
+  public void getReferenceTypeDescriptorByPrimitiveWrapDimensionArrayType() {
+    assertEquals("[[Ljava/lang/Boolean;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Boolean;"));
+    assertEquals("[[Ljava/lang/Character;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Character;"));
+    assertEquals("[[Ljava/lang/Byte;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Byte;"));
+    assertEquals("[[Ljava/lang/Short;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Short;"));
+    assertEquals("[[Ljava/lang/Integer;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Integer;"));
+    assertEquals("[[Ljava/lang/Float;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Float;"));
+    assertEquals("[[Ljava/lang/Long;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Long;"));
+    assertEquals("[[Ljava/lang/Double;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Double;"));
+  }
+
+  @Test
+  public void getTypeDescriptorByPrimitiveType() {
     assertEquals("Z", TypeUtils.getTypeDescriptor(Boolean.TYPE));
     assertEquals("C", TypeUtils.getTypeDescriptor(Character.TYPE));
     assertEquals("B", TypeUtils.getTypeDescriptor(Byte.TYPE));
@@ -26,8 +109,10 @@ public class TypeUtilsTest {
     assertEquals("F", TypeUtils.getTypeDescriptor(Float.TYPE));
     assertEquals("J", TypeUtils.getTypeDescriptor(Long.TYPE));
     assertEquals("D", TypeUtils.getTypeDescriptor(Double.TYPE));
+  }
 
-    // primitive array type
+  @Test
+  public void getTypeDescriptorByPrimitiveArrayType() {
     assertEquals("[Z", TypeUtils.getTypeDescriptor(boolean[].class));
     assertEquals("[C", TypeUtils.getTypeDescriptor(char[].class));
     assertEquals("[B", TypeUtils.getTypeDescriptor(byte[].class));
@@ -36,7 +121,10 @@ public class TypeUtilsTest {
     assertEquals("[F", TypeUtils.getTypeDescriptor(float[].class));
     assertEquals("[J", TypeUtils.getTypeDescriptor(long[].class));
     assertEquals("[D", TypeUtils.getTypeDescriptor(double[].class));
+  }
 
+  @Test
+  public void getTypeDescriptorByPrimitiveDimensionArrayType() {
     assertEquals("[[Z", TypeUtils.getTypeDescriptor(boolean[][].class));
     assertEquals("[[C", TypeUtils.getTypeDescriptor(char[][].class));
     assertEquals("[[B", TypeUtils.getTypeDescriptor(byte[][].class));
@@ -45,8 +133,10 @@ public class TypeUtilsTest {
     assertEquals("[[F", TypeUtils.getTypeDescriptor(float[][].class));
     assertEquals("[[J", TypeUtils.getTypeDescriptor(long[][].class));
     assertEquals("[[D", TypeUtils.getTypeDescriptor(double[][].class));
+  }
 
-    // primitive wrap type
+  @Test
+  public void getTypeDescriptorByPrimitiveWrapType() {
     assertEquals("Ljava.lang.Boolean;", TypeUtils.getTypeDescriptor(Boolean.class));
     assertEquals("Ljava.lang.Character;", TypeUtils.getTypeDescriptor(Character.class));
     assertEquals("Ljava.lang.Byte;", TypeUtils.getTypeDescriptor(Byte.class));
@@ -55,8 +145,10 @@ public class TypeUtilsTest {
     assertEquals("Ljava.lang.Float;", TypeUtils.getTypeDescriptor(Float.class));
     assertEquals("Ljava.lang.Long;", TypeUtils.getTypeDescriptor(Long.class));
     assertEquals("Ljava.lang.Double;", TypeUtils.getTypeDescriptor(Double.class));
+  }
 
-    // primitive wrap array type
+  @Test
+  public void getTypeDescriptorByPrimitiveWrapArrayType() {
     assertEquals("[Ljava.lang.Boolean;", TypeUtils.getTypeDescriptor(Boolean[].class));
     assertEquals("[Ljava.lang.Character;", TypeUtils.getTypeDescriptor(Character[].class));
     assertEquals("[Ljava.lang.Byte;", TypeUtils.getTypeDescriptor(Byte[].class));
@@ -65,7 +157,10 @@ public class TypeUtilsTest {
     assertEquals("[Ljava.lang.Float;", TypeUtils.getTypeDescriptor(Float[].class));
     assertEquals("[Ljava.lang.Long;", TypeUtils.getTypeDescriptor(Long[].class));
     assertEquals("[Ljava.lang.Double;", TypeUtils.getTypeDescriptor(Double[].class));
+  }
 
+  @Test
+  public void getTypeDescriptorByPrimitiveWrapDimensionArrayType() {
     assertEquals("[[Ljava.lang.Boolean;", TypeUtils.getTypeDescriptor(Boolean[][].class));
     assertEquals("[[Ljava.lang.Character;", TypeUtils.getTypeDescriptor(Character[][].class));
     assertEquals("[[Ljava.lang.Byte;", TypeUtils.getTypeDescriptor(Byte[][].class));
@@ -74,13 +169,14 @@ public class TypeUtilsTest {
     assertEquals("[[Ljava.lang.Float;", TypeUtils.getTypeDescriptor(Float[][].class));
     assertEquals("[[Ljava.lang.Long;", TypeUtils.getTypeDescriptor(Long[][].class));
     assertEquals("[[Ljava.lang.Double;", TypeUtils.getTypeDescriptor(Double[][].class));
+  }
 
-    // list type
+  @Test
+  public void getTypeDescriptorByParameterizedType() {
     assertEquals("Ljava.util.List<Ljava.lang.String;>;", TypeUtils.getTypeDescriptor(ParameterizedTypeImpl.make(List.class, new Type[]{String.class}, null)));
     assertEquals("Ljava.util.List<Ljava.util.List<Ljava.lang.String;>;>;", TypeUtils.getTypeDescriptor(ParameterizedTypeImpl.make(List.class,
         new Type[]{ParameterizedTypeImpl.make(List.class, new Type[]{String.class}, null)}, null)));
 
-    // map type
     assertEquals("Ljava.util.Map<Ljava.lang.Long;Ljava.lang.String;>;", TypeUtils.getTypeDescriptor(ParameterizedTypeImpl.make(Map.class, new Type[]{Long.class, String.class}, null)));
     assertEquals("Ljava.util.Map<Ljava.lang.Long;Ljava.util.List<Ljava.lang.String;>;>;", TypeUtils.getTypeDescriptor(
         ParameterizedTypeImpl.make(Map.class, new Type[]{Long.class, ParameterizedTypeImpl.make(List.class, new Type[]{String.class}, null)}, null))
