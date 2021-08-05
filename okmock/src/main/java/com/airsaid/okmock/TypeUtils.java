@@ -40,14 +40,14 @@ class TypeUtils {
 
   private static String getArrayBasicDescriptor(String descriptor) {
     if (isArrayType(descriptor)) {
-      return descriptor.substring(descriptor.lastIndexOf('['));
+      return descriptor.substring(descriptor.lastIndexOf('[') + 1);
     }
     return "";
   }
 
   private static String getArrayDescriptorPrefix(String descriptor) {
     if (isArrayType(descriptor)) {
-      return descriptor.substring(0, descriptor.lastIndexOf('['));
+      return descriptor.substring(0, descriptor.lastIndexOf('[') + 1);
     }
     return "";
   }
