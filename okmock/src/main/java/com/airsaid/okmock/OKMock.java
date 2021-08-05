@@ -72,23 +72,23 @@ public class OKMock {
 
     Class<?> clazz = getClassByReflection(formatSignature);
     if (Boolean.class.isAssignableFrom(clazz)) {
-      return getRandomBoolean();
+      return RandomDataProvider.getRandomBoolean();
     } else if (Character.class.isAssignableFrom(clazz)) {
-      return getRandomChar();
+      return RandomDataProvider.getRandomChar();
     } else if (Byte.class.isAssignableFrom(clazz)) {
-      return getRandomByte();
+      return RandomDataProvider.getRandomByte();
     } else if (Short.class.isAssignableFrom(clazz)) {
-      return getRandomShort();
+      return RandomDataProvider.getRandomShort();
     } else if (Integer.class.isAssignableFrom(clazz)) {
-      return getRandomInt();
+      return RandomDataProvider.getRandomInt();
     } else if (Float.class.isAssignableFrom(clazz)) {
-      return getRandomFloat();
+      return RandomDataProvider.getRandomFloat();
     } else if (Long.class.isAssignableFrom(clazz)) {
-      return getRandomLong();
+      return RandomDataProvider.getRandomLong();
     } else if (Double.class.isAssignableFrom(clazz)) {
-      return getRandomDouble();
+      return RandomDataProvider.getRandomDouble();
     } else if (String.class.isAssignableFrom(clazz)) {
-      return getRandomString();
+      return RandomDataProvider.getRandomString();
     } else if (List.class.isAssignableFrom(clazz)) {
       List<Object> listInstance = getListInstance(clazz);
       Object params = getInstanceRecursively(formatSignatures, start + 1, end);
@@ -132,42 +132,6 @@ public class OKMock {
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private static boolean getRandomBoolean() {
-    return RandomUtils.nextBoolean();
-  }
-
-  private static char getRandomChar() {
-    return (char) RandomUtils.nextInt(49, 122);
-  }
-
-  private static byte getRandomByte() {
-    return (byte) RandomUtils.nextInt(Byte.MIN_VALUE, Byte.MAX_VALUE);
-  }
-
-  private static short getRandomShort() {
-    return (short) RandomUtils.nextInt(Short.MIN_VALUE, Short.MAX_VALUE);
-  }
-
-  private static int getRandomInt() {
-    return RandomUtils.nextInt();
-  }
-
-  private static float getRandomFloat() {
-    return RandomUtils.nextFloat();
-  }
-
-  private static long getRandomLong() {
-    return RandomUtils.nextLong();
-  }
-
-  private static double getRandomDouble() {
-    return RandomUtils.nextDouble();
-  }
-
-  private static String getRandomString() {
-    return RandomStringUtils.random(RandomUtils.nextInt(1, 100), true, true);
   }
 
   @SuppressWarnings("unchecked")
