@@ -19,7 +19,6 @@ import java.util.Set;
 public class OKMock {
 
   public static Object getMockData(String signature) {
-    signature = TypeUtils.getReferenceTypeDescriptor(signature);
     List<String> formatSignatures = formatSignature(signature);
     return getInstanceRecursively(formatSignatures, 0, formatSignatures.size() - 1);
   }
@@ -30,7 +29,7 @@ public class OKMock {
     char[] chars = signature.toCharArray();
     for (int i = 0; i < chars.length; i++) {
       char ch = chars[i];
-      if (className.length() <= 0 && ch == 'L') {
+      if ((className.length() <= 0 || className.charAt(className.length() - 1) == '[') && ch == 'L') {
         continue;
       }
 
@@ -65,73 +64,61 @@ public class OKMock {
       return null;
     }
 
-    String formatSignature = formatSignatures.get(start);
-    if (!isClassName(formatSignature)) {
+    String descriptor = formatSignatures.get(start);
+    if (!isDescriptor(descriptor)) {
       return getInstanceRecursively(formatSignatures, start + 1, end);
     }
 
-    Class<?> clazz = getClassByReflection(formatSignature);
-    if (Boolean.class.isAssignableFrom(clazz)) {
-      return RandomDataProvider.getRandomBoolean();
-    } else if (Character.class.isAssignableFrom(clazz)) {
-      return RandomDataProvider.getRandomChar();
-    } else if (Byte.class.isAssignableFrom(clazz)) {
-      return RandomDataProvider.getRandomByte();
-    } else if (Short.class.isAssignableFrom(clazz)) {
-      return RandomDataProvider.getRandomShort();
-    } else if (Integer.class.isAssignableFrom(clazz)) {
-      return RandomDataProvider.getRandomInt();
-    } else if (Float.class.isAssignableFrom(clazz)) {
-      return RandomDataProvider.getRandomFloat();
-    } else if (Long.class.isAssignableFrom(clazz)) {
-      return RandomDataProvider.getRandomLong();
-    } else if (Double.class.isAssignableFrom(clazz)) {
-      return RandomDataProvider.getRandomDouble();
-    } else if (String.class.isAssignableFrom(clazz)) {
-      return RandomDataProvider.getRandomString();
-    } else if (List.class.isAssignableFrom(clazz)) {
-      List<Object> listInstance = getListInstance(clazz);
-      Object params = getInstanceRecursively(formatSignatures, start + 1, end);
-      if (params != null) {
-        listInstance.add(params);
-        randomForEach(index -> listInstance.add(getInstanceRecursively(formatSignatures, start + 1, end)));
-      }
-      return listInstance;
-    } else if (Set.class.isAssignableFrom(clazz)) {
-      Set<Object> setInstance = getSetInstance(clazz);
-      Object params = getInstanceRecursively(formatSignatures, start + 1, end);
-      if (params != null) {
-        setInstance.add(params);
-        randomForEach(index -> setInstance.add(getInstanceRecursively(formatSignatures, start + 1, end)));
-      }
-      return setInstance;
-    } else if (Map.class.isAssignableFrom(clazz)) {
-      int mapPartitionIndex = findMapPartitionIndex(formatSignatures, start, end);
-      Map<Object, Object> mapInstance = getMapInstance(clazz);
-      Object key = getInstanceRecursively(formatSignatures, start + 1, mapPartitionIndex);
-      Object value = getInstanceRecursively(formatSignatures, mapPartitionIndex + 1, end);
-      if (key != null && value != null) {
-        mapInstance.put(key, value);
-        randomForEach(index ->
-            mapInstance.put(getInstanceRecursively(formatSignatures, start + 1, mapPartitionIndex),
-                getInstanceRecursively(formatSignatures, mapPartitionIndex + 1, end)));
-      }
-      return mapInstance;
+    Class<?> sourceClass = TypeUtils.getClass(descriptor);
+    boolean isArray = sourceClass.isArray();
+    Class<?> componentType = TypeUtils.getOriginalComponentType(sourceClass);
+    Object array = isArray ? ArrayUtils.getArray(sourceClass, componentType, 1, 50) : null;
+
+    if (Boolean.class.isAssignableFrom(componentType) || Boolean.TYPE == componentType) {
+      return isArray ? RandomDataProvider.getRandomBooleanArray(array) : RandomDataProvider.getRandomBoolean();
+    } else if (Character.class.isAssignableFrom(componentType) || Character.TYPE == componentType) {
+      return isArray ? RandomDataProvider.getRandomCharArray(array) : RandomDataProvider.getRandomChar();
+    } else if (Byte.class.isAssignableFrom(componentType) || Byte.TYPE == componentType) {
+      return isArray ? RandomDataProvider.getRandomByteArray(array) : RandomDataProvider.getRandomByte();
+    } else if (Short.class.isAssignableFrom(componentType) || Short.TYPE == componentType) {
+      return isArray ? RandomDataProvider.getRandomShortArray(array) : RandomDataProvider.getRandomShort();
+    } else if (Integer.class.isAssignableFrom(componentType) || Integer.TYPE == componentType) {
+      return isArray ? RandomDataProvider.getRandomIntArray(array) : RandomDataProvider.getRandomInt();
+    } else if (Float.class.isAssignableFrom(componentType) || Float.TYPE == componentType) {
+      return isArray ? RandomDataProvider.getRandomFloatArray(array) : RandomDataProvider.getRandomFloat();
+    } else if (Long.class.isAssignableFrom(componentType) || Long.TYPE == componentType) {
+      return isArray ? RandomDataProvider.getRandomLongArray(array) : RandomDataProvider.getRandomLong();
+    } else if (Double.class.isAssignableFrom(componentType) || Double.TYPE == componentType) {
+      return isArray ? RandomDataProvider.getRandomDoubleArray(array) : RandomDataProvider.getRandomDouble();
+    } else if (String.class.isAssignableFrom(componentType)) {
+      return isArray ? RandomDataProvider.getRandomShortArray(array) : RandomDataProvider.getRandomString();
+    } else if (List.class.isAssignableFrom(componentType)) {
+      List<Object> listData = getListData(componentType, formatSignatures, start, end);
+      return isArray ? ArrayUtils.fillArrayData(array, listData) : listData;
+    } else if (Set.class.isAssignableFrom(componentType)) {
+      Set<Object> setData = getSetData(componentType, formatSignatures, start, end);
+      return isArray ? ArrayUtils.fillArrayData(array, setData) : setData;
+    } else if (Map.class.isAssignableFrom(componentType)) {
+      Map<Object, Object> mapData = getMapData(componentType, formatSignatures, start, end);
+      return isArray ? ArrayUtils.fillArrayData(array, mapData) : mapData;
     } else {
-      return getBean(clazz);
+      Object bean = getBean(componentType);
+      return isArray ? ArrayUtils.fillArrayData(array, bean) : bean;
     }
   }
 
-  private static boolean isClassName(String formatSignature) {
+  private static boolean isDescriptor(String formatSignature) {
     return !formatSignature.equals("<") && !formatSignature.equals(">") && !formatSignature.equals(";");
   }
 
-  private static Class<?> getClassByReflection(String className) {
-    try {
-      return Class.forName(className);
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e);
+  private static List<Object> getListData(Class<?> clazz, List<String> formatSignatures, int start, int end) {
+    List<Object> listInstance = getListInstance(clazz);
+    Object params = getInstanceRecursively(formatSignatures, start + 1, end);
+    if (params != null) {
+      listInstance.add(params);
+      randomForEach(index -> listInstance.add(getInstanceRecursively(formatSignatures, start + 1, end)));
     }
+    return listInstance;
   }
 
   @SuppressWarnings("unchecked")
@@ -142,12 +129,44 @@ public class OKMock {
     return (List<Object>) getDefaultInstance(clazz);
   }
 
+  private static Object getDefaultInstance(Class<?> clazz) {
+    try {
+      return clazz.getConstructor().newInstance();
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static Set<Object> getSetData(Class<?> clazz, List<String> formatSignatures, int start, int end) {
+    Set<Object> setInstance = getSetInstance(clazz);
+    Object params = getInstanceRecursively(formatSignatures, start + 1, end);
+    if (params != null) {
+      setInstance.add(params);
+      randomForEach(index -> setInstance.add(getInstanceRecursively(formatSignatures, start + 1, end)));
+    }
+    return setInstance;
+  }
+
   @SuppressWarnings("unchecked")
   private static Set<Object> getSetInstance(Class<?> clazz) {
     if (clazz.isInterface()) {
       return new HashSet<>();
     }
     return (Set<Object>) getDefaultInstance(clazz);
+  }
+
+  private static Map<Object, Object> getMapData(Class<?> clazz, List<String> formatSignatures, int start, int end) {
+    int mapPartitionIndex = findMapPartitionIndex(formatSignatures, start, end);
+    Map<Object, Object> mapInstance = getMapInstance(clazz);
+    Object key = getInstanceRecursively(formatSignatures, start + 1, mapPartitionIndex);
+    Object value = getInstanceRecursively(formatSignatures, mapPartitionIndex + 1, end);
+    if (key != null && value != null) {
+      mapInstance.put(key, value);
+      randomForEach(index ->
+          mapInstance.put(getInstanceRecursively(formatSignatures, start + 1, mapPartitionIndex),
+              getInstanceRecursively(formatSignatures, mapPartitionIndex + 1, end)));
+    }
+    return mapInstance;
   }
 
   @SuppressWarnings("unchecked")
@@ -158,16 +177,8 @@ public class OKMock {
     return (Map<Object, Object>) getDefaultInstance(clazz);
   }
 
-  private static Object getDefaultInstance(Class<?> clazz) {
-    try {
-      return clazz.getConstructor().newInstance();
-    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
   private static void randomForEach(IntConsumer consumer) {
-    for (int i = 0; i <= RandomUtils.nextInt(1, 50); i++) {
+    for (int i = 0; i <= RandomDataProvider.nextInt(1, 50); i++) {
       consumer.accept(i);
     }
   }
@@ -188,6 +199,7 @@ public class OKMock {
 
   @SuppressWarnings(value = "unchecked")
   private static <T> T getBean(Class<T> clazz) {
+    System.out.println("clazz: " + clazz);
     Constructor<?> constructor = getMaxParamsConstructor(clazz);
     Type[] parameterTypes = constructor.getGenericParameterTypes();
     Annotation[][] parameterAnnotations = constructor.getParameterAnnotations();
@@ -241,31 +253,31 @@ public class OKMock {
       MockValue mockValue = (MockValue) annotation;
       if (Boolean.TYPE.isAssignableFrom(parameter) || Boolean.class.isAssignableFrom(parameter)) {
         boolean[] booleanValues = mockValue.booleanValues();
-        return booleanValues[RandomUtils.nextInt(0, booleanValues.length)];
+        return booleanValues[RandomDataProvider.nextInt(0, booleanValues.length)];
       } else if (Character.TYPE.isAssignableFrom(parameter) || Character.class.isAssignableFrom(parameter)) {
         char[] charValues = mockValue.charValues();
-        return charValues[RandomUtils.nextInt(0, charValues.length)];
+        return charValues[RandomDataProvider.nextInt(0, charValues.length)];
       } else if (Byte.TYPE.isAssignableFrom(parameter) || Byte.class.isAssignableFrom(parameter)) {
         byte[] byteValues = mockValue.byteValues();
-        return byteValues[RandomUtils.nextInt(0, byteValues.length)];
+        return byteValues[RandomDataProvider.nextInt(0, byteValues.length)];
       } else if (Short.TYPE.isAssignableFrom(parameter) || Short.class.isAssignableFrom(parameter)) {
         short[] shortValues = mockValue.shortValues();
-        return shortValues[RandomUtils.nextInt(0, shortValues.length)];
+        return shortValues[RandomDataProvider.nextInt(0, shortValues.length)];
       } else if (Integer.TYPE.isAssignableFrom(parameter) || Integer.class.isAssignableFrom(parameter)) {
         int[] intValues = mockValue.intValues();
-        return intValues[RandomUtils.nextInt(0, intValues.length)];
+        return intValues[RandomDataProvider.nextInt(0, intValues.length)];
       } else if (Float.TYPE.isAssignableFrom(parameter) || Float.class.isAssignableFrom(parameter)) {
         float[] floatValues = mockValue.floatValues();
-        return floatValues[RandomUtils.nextInt(0, floatValues.length)];
+        return floatValues[RandomDataProvider.nextInt(0, floatValues.length)];
       } else if (Long.TYPE.isAssignableFrom(parameter) || Long.class.isAssignableFrom(parameter)) {
         long[] longValues = mockValue.longValues();
-        return longValues[RandomUtils.nextInt(0, longValues.length)];
+        return longValues[RandomDataProvider.nextInt(0, longValues.length)];
       } else if (Double.TYPE.isAssignableFrom(parameter) || Double.class.isAssignableFrom(parameter)) {
         double[] doubleValues = mockValue.doubleValues();
-        return doubleValues[RandomUtils.nextInt(0, doubleValues.length)];
+        return doubleValues[RandomDataProvider.nextInt(0, doubleValues.length)];
       } else if (String.class.isAssignableFrom(parameter)) {
         String[] stringValues = mockValue.stringValues();
-        return stringValues[RandomUtils.nextInt(0, stringValues.length)];
+        return stringValues[RandomDataProvider.nextInt(0, stringValues.length)];
       } else {
         return null;
       }

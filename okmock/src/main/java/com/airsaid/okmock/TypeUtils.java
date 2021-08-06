@@ -1,5 +1,6 @@
 package com.airsaid.okmock;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -7,6 +8,50 @@ import java.lang.reflect.Type;
  * @author airsaid
  */
 class TypeUtils {
+
+  public static Class<?> getOriginalComponentType(Class<?> clazz) {
+    while (clazz.getComponentType() != null) {
+      clazz = clazz.getComponentType();
+    }
+    return clazz;
+  }
+
+  public static Class<?> getClass(String descriptor) {
+    if (isPrimitiveType(descriptor)) {
+      if (isBooleanType(descriptor)) {
+        return Boolean.TYPE;
+      } else if (isCharType(descriptor)) {
+        return Character.TYPE;
+      } else if (isByteType(descriptor)) {
+        return Byte.TYPE;
+      } else if (isShortType(descriptor)) {
+        return Short.TYPE;
+      } else if (isIntType(descriptor)) {
+        return Integer.TYPE;
+      } else if (isFloatType(descriptor)) {
+        return Float.TYPE;
+      } else if (isLongType(descriptor)) {
+        return Long.TYPE;
+      } else if (isDoubleType(descriptor)) {
+        return Double.TYPE;
+      }
+    }
+
+    int arrayIndex = descriptor.lastIndexOf('[');
+    int arrayDimension = arrayIndex + 1;
+    boolean isArray = arrayIndex != -1;
+    String className = (isArray ? descriptor.substring(arrayDimension) : descriptor).replaceAll("/", ".");
+
+    try {
+      Class<?> clazz = isPrimitiveType(className) ? getClass(className) : Class.forName(className);
+      if (isArray) {
+        return ArrayUtils.getArray(clazz, arrayDimension, 0, 0).getClass();
+      }
+      return clazz;
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   public static String getReferenceTypeDescriptor(String descriptor) {
     String basicDescriptor = descriptor;
@@ -142,7 +187,12 @@ class TypeUtils {
       }
       sb.append(";");
       return sb.toString();
+    } else if (type instanceof GenericArrayType) {
+      GenericArrayType genericArrayType = (GenericArrayType) type;
+      Type genericComponentType = genericArrayType.getGenericComponentType();
+      return "[" + getTypeDescriptor(genericComponentType);
     }
-    throw new IllegalArgumentException("Unsupported type: " + type);
+
+    throw new IllegalArgumentException("Unsupported type: " + type.getClass());
   }
 }

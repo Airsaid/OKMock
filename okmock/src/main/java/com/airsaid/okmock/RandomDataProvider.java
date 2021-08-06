@@ -1,18 +1,22 @@
 package com.airsaid.okmock;
 
 import java.lang.reflect.Array;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author airsaid
  */
 class RandomDataProvider {
 
-  private RandomDataProvider() {
-
+  private static ThreadLocalRandom random() {
+    return ThreadLocalRandom.current();
   }
 
+  private RandomDataProvider() {}
+
   public static boolean getRandomBoolean() {
-    return RandomUtils.nextBoolean();
+    return random().nextBoolean();
   }
 
   public static Object getRandomBooleanArray(Object array) {
@@ -20,7 +24,7 @@ class RandomDataProvider {
   }
 
   public static char getRandomChar() {
-    return (char) RandomUtils.nextInt(49, 122);
+    return (char) nextInt(49, 122);
   }
 
   public static Object getRandomCharArray(Object array) {
@@ -28,7 +32,7 @@ class RandomDataProvider {
   }
 
   public static byte getRandomByte() {
-    return (byte) RandomUtils.nextInt(Byte.MIN_VALUE, Byte.MAX_VALUE);
+    return (byte) nextInt(Byte.MIN_VALUE, Byte.MAX_VALUE);
   }
 
   public static Object getRandomByteArray(Object array) {
@@ -36,7 +40,7 @@ class RandomDataProvider {
   }
 
   public static short getRandomShort() {
-    return (short) RandomUtils.nextInt(Short.MIN_VALUE, Short.MAX_VALUE);
+    return (short) nextInt(Short.MIN_VALUE, Short.MAX_VALUE);
   }
 
   public static Object getRandomShortArray(Object array) {
@@ -44,7 +48,7 @@ class RandomDataProvider {
   }
 
   public static int getRandomInt() {
-    return RandomUtils.nextInt();
+    return random().nextInt();
   }
 
   public static Object getRandomIntArray(Object array) {
@@ -52,7 +56,7 @@ class RandomDataProvider {
   }
 
   public static float getRandomFloat() {
-    return RandomUtils.nextFloat();
+    return random().nextFloat();
   }
 
   public static Object getRandomFloatArray(Object array) {
@@ -60,7 +64,7 @@ class RandomDataProvider {
   }
 
   public static long getRandomLong() {
-    return RandomUtils.nextLong();
+    return random().nextLong();
   }
 
   public static Object getRandomLongArray(Object array) {
@@ -68,7 +72,7 @@ class RandomDataProvider {
   }
 
   public static double getRandomDouble() {
-    return RandomUtils.nextDouble();
+    return random().nextDouble();
   }
 
   public static Object getRandomDoubleArray(Object array) {
@@ -76,7 +80,7 @@ class RandomDataProvider {
   }
 
   public static String getRandomString() {
-    return RandomStringUtils.random(RandomUtils.nextInt(1, 100), true, true);
+    return randomString(nextInt(1, 100), 0, 0, true, true, null, random());
   }
 
   public static Object getRandomStringArray(Object array) {
@@ -84,11 +88,99 @@ class RandomDataProvider {
   }
 
   public static Object getRandomArrayData(Object array, ArrayDataProvider provider) {
+    return fillArrayData(array, provider);
+  }
+
+  public static int nextInt(final int startInclusive, final int endExclusive) {
+    if (startInclusive == endExclusive) {
+      return startInclusive;
+    }
+
+    return startInclusive + random().nextInt(endExclusive - startInclusive);
+  }
+
+  private static String randomString(int count, int start, int end, final boolean letters, final boolean numbers,
+                                     final char[] chars, final Random random) {
+    if (count == 0) {
+      return "";
+    }
+    if (count < 0) {
+      throw new IllegalArgumentException("Requested random string length " + count + " is less than 0.");
+    }
+    if (chars != null && chars.length == 0) {
+      throw new IllegalArgumentException("The chars array must not be empty");
+    }
+
+    if (start == 0 && end == 0) {
+      if (chars != null) {
+        end = chars.length;
+      } else if (!letters && !numbers) {
+        end = Character.MAX_CODE_POINT;
+      } else {
+        end = 'z' + 1;
+        start = ' ';
+      }
+    } else if (end <= start) {
+      throw new IllegalArgumentException("Parameter end (" + end + ") must be greater than start (" + start + ")");
+    }
+
+    final int zero_digit_ascii = 48;
+    final int first_letter_ascii = 65;
+
+    if (chars == null && (numbers && end <= zero_digit_ascii
+        || letters && end <= first_letter_ascii)) {
+      throw new IllegalArgumentException("Parameter end (" + end + ") must be greater then (" + zero_digit_ascii + ") for generating digits " +
+          "or greater then (" + first_letter_ascii + ") for generating letters.");
+    }
+
+    final StringBuilder builder = new StringBuilder(count);
+    final int gap = end - start;
+
+    while (count-- != 0) {
+      final int codePoint;
+      if (chars == null) {
+        codePoint = random.nextInt(gap) + start;
+
+        switch (Character.getType(codePoint)) {
+          case Character.UNASSIGNED:
+          case Character.PRIVATE_USE:
+          case Character.SURROGATE:
+            count++;
+            continue;
+        }
+
+      } else {
+        codePoint = chars[random.nextInt(gap) + start];
+      }
+
+      final int numberOfChars = Character.charCount(codePoint);
+      if (count == 0 && numberOfChars > 1) {
+        count++;
+        continue;
+      }
+
+      if (letters && Character.isLetter(codePoint)
+          || numbers && Character.isDigit(codePoint)
+          || !letters && !numbers) {
+        builder.appendCodePoint(codePoint);
+
+        if (numberOfChars == 2) {
+          count--;
+        }
+
+      } else {
+        count++;
+      }
+    }
+    return builder.toString();
+  }
+
+  private static Object fillArrayData(Object array, ArrayDataProvider provider) {
     int length = Array.getLength(array);
     for (int i = 0; i < length; i++) {
       Object elem = Array.get(array, i);
       if (elem != null && elem.getClass().isArray()) {
-        Array.set(array, i, getRandomArrayData(elem, provider));
+        Array.set(array, i, fillArrayData(elem, provider));
       } else {
         Array.set(array, i, provider.getArrayData());
       }
