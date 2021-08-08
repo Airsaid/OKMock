@@ -87,16 +87,16 @@ class RandomDataProvider {
     return getRandomArrayData(array, RandomDataProvider::getRandomString);
   }
 
-  public static Object getRandomArrayData(Object array, ArrayDataProvider provider) {
-    return fillArrayData(array, provider);
-  }
-
   public static int nextInt(final int startInclusive, final int endExclusive) {
     if (startInclusive == endExclusive) {
       return startInclusive;
     }
 
     return startInclusive + random().nextInt(endExclusive - startInclusive);
+  }
+
+  private static Object getRandomArrayData(Object array, ArrayDataProvider provider) {
+    return fillArrayData(array, provider);
   }
 
   private static String randomString(int count, int start, int end, final boolean letters, final boolean numbers,
