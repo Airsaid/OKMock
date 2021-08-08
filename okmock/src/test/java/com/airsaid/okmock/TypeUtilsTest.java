@@ -3,12 +3,19 @@ package com.airsaid.okmock;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author airsaid
@@ -16,87 +23,194 @@ import static org.junit.Assert.assertEquals;
 public class TypeUtilsTest {
 
   @Test
-  public void getReferenceTypeDescriptor() {
-    assertEquals("Ljava/lang/String;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/String;"));
-    assertEquals("Ljava/lang/List;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/List;"));
-
-    assertEquals("[Ljava/lang/String;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/String;"));
-    assertEquals("[Ljava/lang/List;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/List;"));
-
-    assertEquals("[[Ljava/lang/String;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/String;"));
-    assertEquals("[[Ljava/lang/List;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/List;"));
+  public void getClassName() {
+    assertEquals("", TypeUtils.getClassName(null));
+    assertEquals("", TypeUtils.getClassName(""));
+    assertEquals("", TypeUtils.getClassName("Z"));
+    assertEquals("java.lang.String", TypeUtils.getClassName("Ljava/lang/String;"));
+    assertEquals("java.lang.String", TypeUtils.getClassName("[Ljava/lang/String;"));
+    assertEquals("java.lang.String", TypeUtils.getClassName("[[Ljava/lang/String;"));
+    assertEquals("java.lang.String", TypeUtils.getClassName("java/lang/String;"));
+    assertEquals("java.lang.String", TypeUtils.getClassName("java/lang/String"));
   }
 
   @Test
-  public void getReferenceTypeDescriptorByPrimitiveType() {
-    assertEquals("Ljava/lang/Boolean;", TypeUtils.getReferenceTypeDescriptor("Z"));
-    assertEquals("Ljava/lang/Character;", TypeUtils.getReferenceTypeDescriptor("C"));
-    assertEquals("Ljava/lang/Byte;", TypeUtils.getReferenceTypeDescriptor("B"));
-    assertEquals("Ljava/lang/Short;", TypeUtils.getReferenceTypeDescriptor("S"));
-    assertEquals("Ljava/lang/Integer;", TypeUtils.getReferenceTypeDescriptor("I"));
-    assertEquals("Ljava/lang/Float;", TypeUtils.getReferenceTypeDescriptor("F"));
-    assertEquals("Ljava/lang/Long;", TypeUtils.getReferenceTypeDescriptor("J"));
-    assertEquals("Ljava/lang/Double;", TypeUtils.getReferenceTypeDescriptor("D"));
+  public void isPrimitiveType() {
+    assertTrue(TypeUtils.isPrimitiveType("Z"));
+    assertTrue(TypeUtils.isPrimitiveType("C"));
+    assertTrue(TypeUtils.isPrimitiveType("B"));
+    assertTrue(TypeUtils.isPrimitiveType("S"));
+    assertTrue(TypeUtils.isPrimitiveType("I"));
+    assertTrue(TypeUtils.isPrimitiveType("F"));
+    assertTrue(TypeUtils.isPrimitiveType("J"));
+    assertTrue(TypeUtils.isPrimitiveType("D"));
+
+    assertFalse(TypeUtils.isPrimitiveType(null));
+    assertFalse(TypeUtils.isPrimitiveType(""));
+    assertFalse(TypeUtils.isPrimitiveType(" "));
+    assertFalse(TypeUtils.isPrimitiveType("ABC"));
   }
 
   @Test
-  public void getReferenceTypeDescriptorByPrimitiveArrayType() {
-    assertEquals("[Ljava/lang/Boolean;", TypeUtils.getReferenceTypeDescriptor("[Z"));
-    assertEquals("[Ljava/lang/Character;", TypeUtils.getReferenceTypeDescriptor("[C"));
-    assertEquals("[Ljava/lang/Byte;", TypeUtils.getReferenceTypeDescriptor("[B"));
-    assertEquals("[Ljava/lang/Short;", TypeUtils.getReferenceTypeDescriptor("[S"));
-    assertEquals("[Ljava/lang/Integer;", TypeUtils.getReferenceTypeDescriptor("[I"));
-    assertEquals("[Ljava/lang/Float;", TypeUtils.getReferenceTypeDescriptor("[F"));
-    assertEquals("[Ljava/lang/Long;", TypeUtils.getReferenceTypeDescriptor("[J"));
-    assertEquals("[Ljava/lang/Double;", TypeUtils.getReferenceTypeDescriptor("[D"));
+  public void isBooleanType() {
+    assertTrue(TypeUtils.isBooleanType("Z"));
+
+    assertFalse(TypeUtils.isBooleanType(""));
+    assertFalse(TypeUtils.isBooleanType(" "));
+    assertFalse(TypeUtils.isBooleanType("ABC"));
   }
 
   @Test
-  public void getReferenceTypeDescriptorByPrimitiveDimensionArrayType() {
-    assertEquals("[[Ljava/lang/Boolean;", TypeUtils.getReferenceTypeDescriptor("[[Z"));
-    assertEquals("[[Ljava/lang/Character;", TypeUtils.getReferenceTypeDescriptor("[[C"));
-    assertEquals("[[Ljava/lang/Byte;", TypeUtils.getReferenceTypeDescriptor("[[B"));
-    assertEquals("[[Ljava/lang/Short;", TypeUtils.getReferenceTypeDescriptor("[[S"));
-    assertEquals("[[Ljava/lang/Integer;", TypeUtils.getReferenceTypeDescriptor("[[I"));
-    assertEquals("[[Ljava/lang/Float;", TypeUtils.getReferenceTypeDescriptor("[[F"));
-    assertEquals("[[Ljava/lang/Long;", TypeUtils.getReferenceTypeDescriptor("[[J"));
-    assertEquals("[[Ljava/lang/Double;", TypeUtils.getReferenceTypeDescriptor("[[D"));
+  public void isCharType() {
+    assertTrue(TypeUtils.isCharType("C"));
+
+    assertFalse(TypeUtils.isCharType(""));
+    assertFalse(TypeUtils.isCharType(" "));
+    assertFalse(TypeUtils.isCharType("ABC"));
   }
 
   @Test
-  public void getReferenceTypeDescriptorByPrimitiveWrapType() {
-    assertEquals("Ljava/lang/Boolean;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Boolean;"));
-    assertEquals("Ljava/lang/Character;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Character;"));
-    assertEquals("Ljava/lang/Byte;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Byte;"));
-    assertEquals("Ljava/lang/Short;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Short;"));
-    assertEquals("Ljava/lang/Integer;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Integer;"));
-    assertEquals("Ljava/lang/Float;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Float;"));
-    assertEquals("Ljava/lang/Long;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Long;"));
-    assertEquals("Ljava/lang/Double;", TypeUtils.getReferenceTypeDescriptor("Ljava/lang/Double;"));
+  public void isByteType() {
+    assertTrue(TypeUtils.isByteType("B"));
+
+    assertFalse(TypeUtils.isByteType(""));
+    assertFalse(TypeUtils.isByteType(" "));
+    assertFalse(TypeUtils.isByteType("ABC"));
   }
 
   @Test
-  public void getReferenceTypeDescriptorByPrimitiveWrapArrayType() {
-    assertEquals("[Ljava/lang/Boolean;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Boolean;"));
-    assertEquals("[Ljava/lang/Character;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Character;"));
-    assertEquals("[Ljava/lang/Byte;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Byte;"));
-    assertEquals("[Ljava/lang/Short;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Short;"));
-    assertEquals("[Ljava/lang/Integer;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Integer;"));
-    assertEquals("[Ljava/lang/Float;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Float;"));
-    assertEquals("[Ljava/lang/Long;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Long;"));
-    assertEquals("[Ljava/lang/Double;", TypeUtils.getReferenceTypeDescriptor("[Ljava/lang/Double;"));
+  public void isShortType() {
+    assertTrue(TypeUtils.isShortType("S"));
+
+    assertFalse(TypeUtils.isShortType(""));
+    assertFalse(TypeUtils.isShortType(" "));
+    assertFalse(TypeUtils.isShortType("ABC"));
   }
 
   @Test
-  public void getReferenceTypeDescriptorByPrimitiveWrapDimensionArrayType() {
-    assertEquals("[[Ljava/lang/Boolean;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Boolean;"));
-    assertEquals("[[Ljava/lang/Character;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Character;"));
-    assertEquals("[[Ljava/lang/Byte;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Byte;"));
-    assertEquals("[[Ljava/lang/Short;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Short;"));
-    assertEquals("[[Ljava/lang/Integer;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Integer;"));
-    assertEquals("[[Ljava/lang/Float;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Float;"));
-    assertEquals("[[Ljava/lang/Long;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Long;"));
-    assertEquals("[[Ljava/lang/Double;", TypeUtils.getReferenceTypeDescriptor("[[Ljava/lang/Double;"));
+  public void isIntType() {
+    assertTrue(TypeUtils.isIntType("I"));
+
+    assertFalse(TypeUtils.isIntType(""));
+    assertFalse(TypeUtils.isIntType(" "));
+    assertFalse(TypeUtils.isIntType("ABC"));
+  }
+
+  @Test
+  public void isFloatType() {
+    assertTrue(TypeUtils.isFloatType("F"));
+
+    assertFalse(TypeUtils.isFloatType(""));
+    assertFalse(TypeUtils.isFloatType(" "));
+    assertFalse(TypeUtils.isFloatType("ABC"));
+  }
+
+  @Test
+  public void isLongType() {
+    assertTrue(TypeUtils.isLongType("J"));
+
+    assertFalse(TypeUtils.isLongType(""));
+    assertFalse(TypeUtils.isLongType(" "));
+    assertFalse(TypeUtils.isLongType("ABC"));
+  }
+
+  @Test
+  public void isDoubleType() {
+    assertTrue(TypeUtils.isDoubleType("D"));
+
+    assertFalse(TypeUtils.isDoubleType(""));
+    assertFalse(TypeUtils.isDoubleType(" "));
+    assertFalse(TypeUtils.isDoubleType("ABC"));
+  }
+
+  @Test
+  public void isArrayType() {
+    assertTrue(TypeUtils.isArrayType("[Z"));
+    assertTrue(TypeUtils.isArrayType("[[Z"));
+    assertTrue(TypeUtils.isArrayType("[[[Z"));
+    assertTrue(TypeUtils.isArrayType("[Ljava/lang/String;"));
+    assertTrue(TypeUtils.isArrayType("[[Ljava/lang/String;"));
+    assertTrue(TypeUtils.isArrayType("[[[Ljava/lang/String;"));
+
+    assertFalse(TypeUtils.isArrayType(null));
+    assertFalse(TypeUtils.isArrayType(""));
+    assertFalse(TypeUtils.isArrayType(" "));
+    assertFalse(TypeUtils.isArrayType("Z"));
+    assertFalse(TypeUtils.isArrayType("ABC"));
+  }
+
+  @Test
+  public void getArrayDimension() {
+    assertEquals(0, TypeUtils.getArrayDimension(null));
+    assertEquals(0, TypeUtils.getArrayDimension(""));
+    assertEquals(0, TypeUtils.getArrayDimension(" "));
+    assertEquals(0, TypeUtils.getArrayDimension("Z"));
+    assertEquals(0, TypeUtils.getArrayDimension("B"));
+    assertEquals(0, TypeUtils.getArrayDimension("ABC"));
+    assertEquals(0, TypeUtils.getArrayDimension("Ljava/lang/String;"));
+
+    assertEquals(1, TypeUtils.getArrayDimension("[Z"));
+    assertEquals(2, TypeUtils.getArrayDimension("[[Z"));
+    assertEquals(3, TypeUtils.getArrayDimension("[[[Z"));
+    assertEquals(1, TypeUtils.getArrayDimension("[Ljava/lang/String;"));
+    assertEquals(2, TypeUtils.getArrayDimension("[[Ljava/lang/String;"));
+    assertEquals(3, TypeUtils.getArrayDimension("[[[Ljava/lang/String;"));
+  }
+
+  @Test
+  public void testGetClassByNull() {
+    assertNull(TypeUtils.getClass(null));
+    assertNull(TypeUtils.getClass(""));
+  }
+
+  @Test
+  public void testGetClassByPrimitiveType() {
+    assertEquals(Boolean.TYPE, TypeUtils.getClass("Z"));
+    assertEquals(Character.TYPE, TypeUtils.getClass("C"));
+    assertEquals(Byte.TYPE, TypeUtils.getClass("B"));
+    assertEquals(Short.TYPE, TypeUtils.getClass("S"));
+    assertEquals(Integer.TYPE, TypeUtils.getClass("I"));
+    assertEquals(Float.TYPE, TypeUtils.getClass("F"));
+    assertEquals(Long.TYPE, TypeUtils.getClass("J"));
+    assertEquals(Double.TYPE, TypeUtils.getClass("D"));
+  }
+
+  @Test
+  public void testGetClassByPrimitiveWrapType() {
+    assertEquals(Boolean.class, TypeUtils.getClass("Ljava/lang/Boolean;"));
+    assertEquals(Character.class, TypeUtils.getClass("Ljava/lang/Character;"));
+    assertEquals(Byte.class, TypeUtils.getClass("Ljava/lang/Byte;"));
+    assertEquals(Short.class, TypeUtils.getClass("Ljava/lang/Short;"));
+    assertEquals(Integer.class, TypeUtils.getClass("Ljava/lang/Integer;"));
+    assertEquals(Float.class, TypeUtils.getClass("Ljava/lang/Float;"));
+    assertEquals(Long.class, TypeUtils.getClass("Ljava/lang/Long;"));
+    assertEquals(Double.class, TypeUtils.getClass("Ljava/lang/Double;"));
+  }
+
+  @Test
+  public void testGetClassByReferenceType() {
+    assertEquals(List.class, TypeUtils.getClass("Ljava/util/List;"));
+    assertEquals(Set.class, TypeUtils.getClass("Ljava/util/Set;"));
+    assertEquals(Map.class, TypeUtils.getClass("Ljava/util/Map;"));
+
+    assertEquals(ArrayList.class, TypeUtils.getClass("Ljava/util/ArrayList;"));
+    assertEquals(HashSet.class, TypeUtils.getClass("Ljava/util/HashSet;"));
+    assertEquals(HashMap.class, TypeUtils.getClass("Ljava/util/HashMap;"));
+  }
+
+  @Test
+  public void getOriginalComponentType() {
+    assertEquals(String.class, TypeUtils.getOriginalComponentType(String.class));
+    assertEquals(Integer.class, TypeUtils.getOriginalComponentType(Integer.class));
+
+    assertEquals(String.class, TypeUtils.getOriginalComponentType(String[].class));
+    assertEquals(Integer.class, TypeUtils.getOriginalComponentType(Integer[].class));
+
+    assertEquals(String.class, TypeUtils.getOriginalComponentType(String[][].class));
+    assertEquals(Integer.class, TypeUtils.getOriginalComponentType(Integer[][].class));
+
+    assertEquals(String.class, TypeUtils.getOriginalComponentType(String[][][].class));
+    assertEquals(Integer.class, TypeUtils.getOriginalComponentType(Integer[][][].class));
   }
 
   @Test
