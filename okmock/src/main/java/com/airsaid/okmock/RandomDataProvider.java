@@ -5,6 +5,8 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
+ * This class is used to provide random data.
+ *
  * @author airsaid
  */
 class RandomDataProvider {
