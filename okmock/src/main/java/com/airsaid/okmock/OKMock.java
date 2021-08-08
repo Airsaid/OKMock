@@ -89,7 +89,7 @@ public class OKMock {
     Class<?> sourceClass = TypeUtils.getClass(descriptor);
     boolean isArray = Objects.requireNonNull(sourceClass).isArray();
     Class<?> componentType = TypeUtils.getOriginalComponentType(sourceClass);
-    Object array = isArray ? ArrayUtils.getArray(sourceClass, componentType, 1, 50) : null;
+    Object array = isArray ? ArrayUtils.getArray(componentType, ArrayUtils.getArrayDimension(sourceClass), 1, 50) : null;
 
     if (Boolean.class.isAssignableFrom(componentType) || Boolean.TYPE == componentType) {
       return isArray ? RandomDataProvider.getRandomBooleanArray(array) : RandomDataProvider.getRandomBoolean();
