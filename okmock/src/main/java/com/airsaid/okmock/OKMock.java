@@ -11,13 +11,36 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
+ * This class provides mock data. is the only public class.
+ * <p>
+ * It is not recommended to manually call its {@link #getMockData(String)} method,
+ * it is recommended to use the {@link com.airsaid.okmock.api.Mock} annotation.
+ *
  * @author airsaid
+ * @see com.airsaid.okmock.api.Mock
  */
 public class OKMock {
 
+  /**
+   * Returns the corresponding mock object through the specified type signature.
+   * <p>
+   * For example, if {@code signature} is {@code Z} descriptor, then return {@link Boolean} mock object.
+   * if {@code signature} is an {@code [I} descriptor, then return {@link Integer} array mock object.
+   * if {@code signature} is an {@code Ljava/lang/String;} descriptor, then return {@link String} mock object.
+   * if {@code signature} is an {@code [Ljava/lang/Boolean;} descriptor, then return {@link Boolean} array mock object.
+   * if {@code signature} is an {@code Ljava/util/List<Ljava/lang/String;>;} signature,
+   * then return {@link List} mock object, and contains random {@link String} data.
+   * <p>
+   * The data is completely random by default, If you need custom data, you can view the {@link MockValue} annotation.
+   *
+   * @param signature the type descriptor or signature.
+   * @return the mock object corresponding to the given type descriptor or signature.
+   * @see MockValue
+   */
   public static Object getMockData(String signature) {
     List<String> formatSignatures = formatSignature(signature);
     return getInstanceRecursively(formatSignatures, 0, formatSignatures.size() - 1);
@@ -29,10 +52,6 @@ public class OKMock {
     char[] chars = signature.toCharArray();
     for (int i = 0; i < chars.length; i++) {
       char ch = chars[i];
-      if ((className.length() <= 0 || className.charAt(className.length() - 1) == '[') && ch == 'L') {
-        continue;
-      }
-
       if (ch == '<') {
         result.add(className.toString());
         result.add(String.valueOf(ch));
@@ -47,8 +66,6 @@ public class OKMock {
         }
       } else if (ch == '>') {
         result.add(String.valueOf(ch));
-      } else if (ch == '/') {
-        className.append('.');
       } else {
         className.append(ch);
       }
@@ -70,7 +87,7 @@ public class OKMock {
     }
 
     Class<?> sourceClass = TypeUtils.getClass(descriptor);
-    boolean isArray = sourceClass.isArray();
+    boolean isArray = Objects.requireNonNull(sourceClass).isArray();
     Class<?> componentType = TypeUtils.getOriginalComponentType(sourceClass);
     Object array = isArray ? ArrayUtils.getArray(sourceClass, componentType, 1, 50) : null;
 
@@ -199,7 +216,6 @@ public class OKMock {
 
   @SuppressWarnings(value = "unchecked")
   private static <T> T getBean(Class<T> clazz) {
-    System.out.println("clazz: " + clazz);
     Constructor<?> constructor = getMaxParamsConstructor(clazz);
     Type[] parameterTypes = constructor.getGenericParameterTypes();
     Annotation[][] parameterAnnotations = constructor.getParameterAnnotations();
