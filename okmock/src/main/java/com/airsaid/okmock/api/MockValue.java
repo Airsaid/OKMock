@@ -6,6 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * This annotation is used to decorate the construction parameters of the bean class.
+ * <p>
+ * This annotation is used in conjunction with a {@link Mock} annotation to specify random data to populate.
+ *
  * @author airsaid
  */
 @Retention(RetentionPolicy.RUNTIME)
