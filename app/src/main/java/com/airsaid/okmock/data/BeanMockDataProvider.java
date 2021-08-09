@@ -5,7 +5,7 @@ import com.airsaid.okmock.api.Mock;
 /**
  * @author airsaid
  */
-public class BeanMockDataTest {
+public class BeanMockDataProvider {
   @Mock
   public String string;
 

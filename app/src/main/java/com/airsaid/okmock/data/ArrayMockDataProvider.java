@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * @author airsaid
  */
-public class ArrayMockDataTest {
+public class ArrayMockDataProvider {
 
   @Mock
   public boolean[] booleanArray;

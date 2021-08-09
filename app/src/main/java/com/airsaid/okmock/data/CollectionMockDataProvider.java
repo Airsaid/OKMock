@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * @author airsaid
  */
-public class CollectionMockDataTest {
+public class CollectionMockDataProvider {
 
   @Mock
   public List<Boolean> booleanList;
