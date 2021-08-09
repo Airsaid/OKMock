@@ -19,9 +19,7 @@ dependencies {
 publishing {
     publications {
         release(MavenPublication) {
-            groupId = 'com.airsaid'
             artifactId = 'okmock'
-            version = '1.0.0'
 
             from components.java
 
@@ -39,6 +37,7 @@ publishing {
                     developer {
                         id = 'airsaid'
                         name = 'Airsaid'
+                        email = 'airsaid1024@gmail.com'
                     }
                 }
                 scm {
@@ -53,11 +52,11 @@ publishing {
     repositories {
         maven {
             url = isReleaseBuild
-                    ? 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-                    : 'https://oss.sonatype.org/content/repositories/snapshots/'
+                    ? 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                    : 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
             credentials {
-                username = project.hasProperty('SONATYPE_NEXUS_USERNAME') ? SONATYPE_NEXUS_USERNAME : ''
-                password = project.hasProperty('SONATYPE_NEXUS_PASSWORD') ? SONATYPE_NEXUS_PASSWORD : ''
+                username = project.hasProperty('ossrhUsername') ? ossrhUsername : ''
+                password = project.hasProperty('ossrhPassword') ? ossrhPassword : ''
             }
         }
     }
