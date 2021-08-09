@@ -40,6 +40,8 @@ class OKMockTransform : AbstractTransform() {
 
     private val fields = mutableListOf<FieldInfo>()
 
+    private var isVisitStaticBlock = false
+
     override fun visit(version: Int, access: Int, name: String, signature: String?, superName: String?, interfaces: Array<out String>?) {
       this.owner = name
       super.visit(version, access, name, signature, superName, interfaces)
@@ -56,10 +58,31 @@ class OKMockTransform : AbstractTransform() {
 
     override fun visitMethod(access: Int, name: String?, descriptor: String?, signature: String?, exceptions: Array<out String>?): MethodVisitor {
       val mv = super.visitMethod(access, name, descriptor, signature, exceptions)
-      if (mv != null && name.equals("<init>")) {
+      if ("<clinit>" == name) {
+        isVisitStaticBlock = true
+      }
+      if (mv != null && ("<init>" == name || "<clinit>" == name)) {
         return FieldAssigneeMethodAdapter(fields, mv)
       }
       return mv
+    }
+
+    override fun visitEnd() {
+      // all methods visited. if static block was not encountered
+      // and it has static fields, add a new static block.
+      if (!isVisitStaticBlock && hasStaticField()) {
+        visitMethod(ACC_STATIC, "<clinit>", "()V", null, null).apply {
+          visitCode()
+          visitInsn(RETURN)
+          visitMaxs(0, 0)
+          visitEnd()
+        }
+      }
+      super.visitEnd()
+    }
+
+    private fun hasStaticField(): Boolean {
+      return fields.any { (it.access and ACC_STATIC) != 0 }
     }
 
     private class AnnotationFieldAdapter(
@@ -84,24 +107,24 @@ class OKMockTransform : AbstractTransform() {
     ) : MethodVisitor(ASM9, mv) {
       override fun visitMethodInsn(opcode: Int, owner: String?, name: String?, descriptor: String?, isInterface: Boolean) {
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
-        // Add field's assignment in the construction method
-        if (opcode == INVOKESPECIAL && name.equals("<init>")) {
+        // Add field's assignment in the construction method and static block
+        if ((opcode == INVOKESPECIAL && "<init>" == name) || (opcode == RETURN && "<clinit>" == name)) {
           assignFields()
         }
       }
 
       private fun assignFields() {
         fields.forEach { fieldInfo ->
+          val isStaticField = (fieldInfo.access and ACC_STATIC) != 0
           val fieldType = Type.getType(fieldInfo.descriptor)
           val referenceDescriptor = if (fieldType.isPrimitiveType())
             fieldType.toPrimitiveWrapType().descriptor else fieldInfo.descriptor
           val referenceType = Type.getType(referenceDescriptor)
-          val signature = fieldInfo.signature
-          val methodParams = if (signature != null && signature.isNotEmpty())
-            signature else fieldInfo.descriptor
 
-          mv.visitVarInsn(ALOAD, 0)
-          mv.visitLdcInsn(methodParams)
+          if (!isStaticField) {
+            mv.visitVarInsn(ALOAD, 0)
+          }
+          mv.visitLdcInsn(getMethodParams(fieldInfo))
           mv.visitMethodInsn(
             INVOKESTATIC, OK_MOCK_CLASS_NAME,
             GET_MOCK_DATA_METHOD_NAME, GET_MOCK_DATA_METHOD_DESCRIPTOR, false
@@ -113,8 +136,14 @@ class OKMockTransform : AbstractTransform() {
               "${fieldType.className}Value", Type.getMethodDescriptor(fieldType), false
             )
           }
-          mv.visitFieldInsn(PUTFIELD, fieldInfo.owner, fieldInfo.name, fieldInfo.descriptor)
+          mv.visitFieldInsn(if (isStaticField) PUTSTATIC else PUTFIELD, fieldInfo.owner, fieldInfo.name, fieldInfo.descriptor)
         }
+      }
+
+      private fun getMethodParams(fieldInfo: FieldInfo): String {
+        val signature = fieldInfo.signature
+        return if (signature != null && signature.isNotEmpty())
+          signature else fieldInfo.descriptor
       }
     }
   }
