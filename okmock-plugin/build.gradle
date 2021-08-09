@@ -3,17 +3,20 @@ plugins {
     id 'kotlin'
     id 'java-gradle-plugin'
     id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '0.14.0'
 }
 
-gradlePlugin {
-    plugins {
-        create("OKMock") {
-            id = "com.airsaid.okmock"
-            displayName = "OKMock"
-            description = ""
-            implementationClass = "com.airsaid.okmock.plugin.OKMockPlugin"
-        }
-    }
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compileOnly "com.android.tools.build:gradle:$agp_version"
+    implementation 'org.ow2.asm:asm:9.2'
+    implementation "com.airsaid:okmock:$version"
+}
+
+pluginBundle {
+    website = 'https://github.com/Airsaid/OKMock'
+    vcsUrl = 'https://github.com/Airsaid/OKMock'
+    tags = ['Mock', 'Java', 'Android', 'Annotation']
 }
 
 java {
@@ -21,22 +24,13 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compileOnly "com.android.tools.build:gradle:$agp_version"
-    implementation 'org.ow2.asm:asm:9.2'
-//    implementation project(":okmock")
-    implementation "com.airsaid:okmock:1.0.0"
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = 'com.airsaid'
-            artifactId = 'okmock-plugin'
-            version = '1.0.0'
-
-            from components.java
+gradlePlugin {
+    plugins {
+        create("OKMock") {
+            id = "com.airsaid.okmock"
+            displayName = "OKMock"
+            description = "OKMock is a Java mock tool, used to quickly auto-fill field data."
+            implementationClass = "com.airsaid.okmock.plugin.OKMockPlugin"
         }
     }
 }
