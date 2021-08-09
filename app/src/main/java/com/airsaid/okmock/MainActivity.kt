@@ -3,10 +3,7 @@ package com.airsaid.okmock
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.airsaid.okmock.data.ArrayMockDataTest
-import com.airsaid.okmock.data.BeanMockDataTest
-import com.airsaid.okmock.data.CollectionMockDataTest
-import com.airsaid.okmock.data.PrimitiveDataProvider
+import com.airsaid.okmock.data.StaticFieldProvider
 import com.airsaid.okmock.util.toDetailString
 import kotlin.concurrent.thread
 
@@ -16,10 +13,11 @@ import kotlin.concurrent.thread
 class MainActivity : AppCompatActivity() {
 
   private val mMockTestClasses = listOf<Any>(
-    PrimitiveDataProvider::class.java.newInstance(),
-    BeanMockDataTest::class.java.newInstance(),
-    ArrayMockDataTest::class.java.newInstance(),
-    CollectionMockDataTest::class.java.newInstance()
+    StaticFieldProvider::class.java.newInstance(),
+//    PrimitiveDataProvider::class.java.newInstance(),
+//    BeanMockDataTest::class.java.newInstance(),
+//    ArrayMockDataTest::class.java.newInstance(),
+//    CollectionMockDataTest::class.java.newInstance()
   )
 
   override fun onCreate(savedInstanceState: Bundle?) {
