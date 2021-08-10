@@ -39,7 +39,7 @@ class OKMockTransform : AbstractTransform() {
 
   override fun onTransform(invocation: TransformInvocation, bytecode: ByteArray): ByteArray {
     val cr = ClassReader(bytecode)
-    val cw = ClassWriter(ClassWriter.COMPUTE_FRAMES)
+    val cw = ClassWriter(ClassWriter.COMPUTE_MAXS)
     val cv = OKMockClassAdapter(listOf(Mock::class.java), cw)
     cr.accept(cv, 0)
     return cw.toByteArray()
