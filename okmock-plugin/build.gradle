@@ -10,7 +10,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compileOnly "com.android.tools.build:gradle:$agp_version"
     implementation 'org.ow2.asm:asm:9.2'
-    implementation "com.airsaid:okmock:$version"
+    implementation "com.airsaid:okmock:$okmock_version"
 }
 
 pluginBundle {

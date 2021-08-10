@@ -10,8 +10,6 @@ java {
     withJavadocJar()
 }
 
-def isReleaseBuild = !version.endsWith('-SNAPSHOT')
-
 dependencies {
     testImplementation 'junit:junit:4.13.2'
 }
@@ -67,11 +65,5 @@ if (isReleaseBuild) {
     signing {
         required { gradle.taskGraph.hasTask("publish") }
         sign publishing.publications
-    }
-}
-
-tasks.register('publishSnapshot').configure { task ->
-    if (!isReleaseBuild) {
-        task.dependsOn(tasks.getByName('publish'))
     }
 }

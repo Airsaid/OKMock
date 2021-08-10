@@ -2,18 +2,20 @@
 buildscript {
     ext.kotlin_version = "1.5.10"
     ext.agp_version = "4.1.1"
-    ext.isApplyPlugin = true
+    ext.okmock_version = "1.0.0"
+    ext.isReleaseBuild = !okmock_version.endsWith('-SNAPSHOT')
     repositories {
+        if (!isReleaseBuild) {
+            mavenLocal()
+        }
         google()
-        mavenLocal()
         mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$agp_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        if (isApplyPlugin) {
-            classpath "com.airsaid:okmock-plugin:1.0.0"
-        }
+        classpath "com.airsaid:okmock-plugin:$okmock_version"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -21,13 +23,15 @@ buildscript {
 
 subprojects {
     group('com.airsaid')
-    version('1.0.0')
+    version("$okmock_version")
 }
 
 allprojects {
     repositories {
+        if (!isReleaseBuild) {
+            mavenLocal()
+        }
         google()
-        mavenLocal()
         mavenCentral()
     }
 }
