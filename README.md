@@ -1,7 +1,8 @@
-[![Version](https://img.shields.io/gradle-plugin-portal/v/com.airsaid.okmock)](https://img.shields.io/gradle-plugin-portal/v/com.airsaid.okmock)
+[![Version](https://img.shields.io/maven-central/v/com.airsaid/okmock)](https://plugins.gradle.org/plugin/com.airsaid.okmock)
 
 # OKMock
-:balloon: OKMock is a Android mock tool, used to quickly auto-fill field data.
+:balloon: OKMock is a a Gradle Plugin for auto-filling field data.
+
 
 # Usage
 1. Add the following to your ```build.gradle```:
