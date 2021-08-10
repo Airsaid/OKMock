@@ -1,8 +1,7 @@
 [![Version](https://img.shields.io/maven-central/v/com.airsaid/okmock)](https://plugins.gradle.org/plugin/com.airsaid.okmock)
 
 # OKMock
-:balloon: OKMock is a a Gradle Plugin for auto-filling field data.
-
+:balloon: OKMock is a Gradle Plugin used to quickly fill field data on Android. ([中文文档](https://github.com/Airsaid/OKMock/blob/main/README_CN.md))
 
 # Usage
 1. Add the following to your ```build.gradle```:
@@ -81,7 +80,6 @@ public Map<Integer, Person>[] personMapArray;
 @Mock
 public Map<Integer, List<Person>> personMapNested;
 ```
-
 
 # License
 ```
