@@ -23,7 +23,7 @@ publishing {
 
             pom {
                 name = 'OKMock'
-                description = 'OKMock is a Java mock tool, used to quickly auto-fill field data.'
+                description = 'A Java mock tool, used to quickly auto-fill field data.'
                 url = 'https://github.com/Airsaid/OKMock'
                 licenses {
                     license {
