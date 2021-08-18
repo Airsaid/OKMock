@@ -248,7 +248,7 @@ public class OKMock {
     Constructor<?> result = null;
     for (Constructor<?> constructor : constructors) {
       int length = constructor.getParameterTypes().length;
-      if (length > maxParamsCount) {
+      if (length > maxParamsCount && !constructor.isSynthetic()) {
         maxParamsCount = length;
         result = constructor;
       }
