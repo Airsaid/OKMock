@@ -4,6 +4,10 @@ plugins {
     id "com.airsaid.okmock"
 }
 
+okmock {
+    enableDebug = true
+}
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.0"

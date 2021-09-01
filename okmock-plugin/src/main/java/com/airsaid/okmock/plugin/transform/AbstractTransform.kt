@@ -25,6 +25,8 @@ import com.android.build.gradle.internal.pipeline.TransformManager
 import com.android.utils.FileUtils
 import com.google.common.collect.ImmutableSet
 import com.google.common.io.Files
+import org.gradle.api.Project
+import org.gradle.api.provider.Property
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -35,10 +37,10 @@ import java.util.zip.ZipOutputStream
 /**
  * @author airsaid
  */
-abstract class AbstractTransform : Transform(), TransformHandle {
+abstract class AbstractTransform(private val project: Project, private val isDebug: Property<Boolean>) : Transform(), TransformHandle {
 
   override fun getInputTypes(): MutableSet<QualifiedContent.ContentType> =
-      TransformManager.CONTENT_CLASS
+    TransformManager.CONTENT_CLASS
 
   override fun getScopes(): MutableSet<in QualifiedContent.Scope> =
     ImmutableSet.of(QualifiedContent.Scope.PROJECT, QualifiedContent.Scope.SUB_PROJECTS)
@@ -57,13 +59,16 @@ abstract class AbstractTransform : Transform(), TransformHandle {
       input.jarInputs.forEach { jarInput ->
         val inputJar = jarInput.file
         val outputJar = transformInvocation.outputProvider.getContentLocation(
-            jarInput.name, jarInput.contentTypes, jarInput.scopes, Format.JAR)
-
+          jarInput.name, jarInput.contentTypes, jarInput.scopes, Format.JAR
+        )
+        log("+---------------------------------------")
+        log("| Start handler input jar: ${inputJar.canonicalPath}")
         val jarInputClass: HashSet<Pair<String, ByteArray>> = hashSetOf()
         ZipInputStream(FileInputStream(inputJar)).use { zipInputStream ->
           var entry: ZipEntry? = zipInputStream.nextEntry
           while (entry != null) {
             if (!entry.isDirectory && entry.name.endsWith(SdkConstants.DOT_CLASS)) {
+              log("| ${entry.name}")
               val outputBytes = onTransform(transformInvocation, zipInputStream.readBytes())
               jarInputClass.add(entry.name to outputBytes)
             }
@@ -84,12 +89,16 @@ abstract class AbstractTransform : Transform(), TransformHandle {
 
       input.directoryInputs.forEach { dirInput ->
         val inputDir = dirInput.file
-        val outputDir = transformInvocation.outputProvider.getContentLocation(dirInput.name,
-          dirInput.contentTypes, dirInput.scopes, Format.DIRECTORY)
-
+        log("+---------------------------------------")
+        log("| Start handler input dir: ${inputDir.canonicalPath}")
+        val outputDir = transformInvocation.outputProvider.getContentLocation(
+          dirInput.name,
+          dirInput.contentTypes, dirInput.scopes, Format.DIRECTORY
+        )
         FileUtils.getAllFiles(inputDir).filter {
           it?.extension?.equals(SdkConstants.EXT_CLASS) ?: false
         }.toHashSet().forEach { inputFile ->
+          log("| ${inputFile.canonicalPath}")
           val outputBytes = onTransform(transformInvocation, inputFile.inputStream().readBytes())
 
           val outputFile = File(outputDir, FileUtils.relativePossiblyNonExistingPath(inputFile, inputDir))
@@ -103,5 +112,11 @@ abstract class AbstractTransform : Transform(), TransformHandle {
     }
 
     onTransformAfter(transformInvocation)
+  }
+
+  private fun log(message: String) {
+    if (isDebug.get()) {
+      project.logger.quiet(message)
+    }
   }
 }

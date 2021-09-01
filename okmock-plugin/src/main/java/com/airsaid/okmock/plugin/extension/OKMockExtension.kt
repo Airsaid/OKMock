@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package com.airsaid.okmock.plugin
+package com.airsaid.okmock.plugin.extension
 
-import com.airsaid.okmock.plugin.extension.OKMockExtension
-import com.airsaid.okmock.plugin.transform.OKMockTransform
-import com.airsaid.okmock.plugin.util.getExtension
-import org.gradle.api.Plugin
-import org.gradle.api.Project
+import org.gradle.api.provider.Property
 
 /**
+ * Configuration object for [com.airsaid.okmock.plugin.OKMockPlugin].
+ *
  * @author airsaid
  */
-class OKMockPlugin : Plugin<Project> {
-  override fun apply(target: Project) {
-    val extension = target.extensions.create(EXTENSION_NAME, OKMockExtension::class.java)
-    target.getExtension().registerTransform(OKMockTransform(target, extension))
-  }
+abstract class OKMockExtension {
 
-  companion object {
-    const val PLUGIN_NAME = "OKMock"
-    const val EXTENSION_NAME = "okmock"
+  /**
+   * Whether to enable debug mode. default disabled.
+   */
+  abstract val enableDebug: Property<Boolean>
+
+  init {
+    enableDebug.convention(false)
   }
 }

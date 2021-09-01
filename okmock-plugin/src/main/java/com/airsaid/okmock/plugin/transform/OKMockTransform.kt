@@ -21,17 +21,19 @@ import com.airsaid.okmock.plugin.OKMockPlugin
 import com.airsaid.okmock.plugin.constant.Constants.GET_MOCK_DATA_METHOD_DESCRIPTOR
 import com.airsaid.okmock.plugin.constant.Constants.GET_MOCK_DATA_METHOD_NAME
 import com.airsaid.okmock.plugin.constant.Constants.OK_MOCK_CLASS_NAME
+import com.airsaid.okmock.plugin.extension.OKMockExtension
 import com.airsaid.okmock.plugin.model.FieldInfo
 import com.airsaid.okmock.plugin.util.isPrimitiveType
 import com.airsaid.okmock.plugin.util.toPrimitiveWrapType
 import com.android.build.api.transform.TransformInvocation
+import org.gradle.api.Project
 import org.objectweb.asm.*
 import org.objectweb.asm.Opcodes.*
 
 /**
  * @author airsaid
  */
-class OKMockTransform : AbstractTransform() {
+class OKMockTransform(project: Project, extension: OKMockExtension) : AbstractTransform(project, extension.enableDebug) {
 
   override fun getName() = OKMockPlugin.PLUGIN_NAME
 
