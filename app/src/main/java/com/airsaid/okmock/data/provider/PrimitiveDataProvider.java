@@ -1,4 +1,4 @@
-package com.airsaid.okmock.data;
+package com.airsaid.okmock.data.provider;
 
 import com.airsaid.okmock.api.Mock;
 

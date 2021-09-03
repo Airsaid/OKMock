@@ -1,6 +1,7 @@
-package com.airsaid.okmock.data;
+package com.airsaid.okmock.data.provider;
 
 import com.airsaid.okmock.api.Mock;
+import com.airsaid.okmock.data.Person;
 
 import java.util.List;
 

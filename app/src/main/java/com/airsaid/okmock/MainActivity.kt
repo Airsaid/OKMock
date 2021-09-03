@@ -1,10 +1,13 @@
 package com.airsaid.okmock
 
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.airsaid.okmock.data.StaticFieldProvider
-import com.airsaid.okmock.util.toDetailString
+import com.airsaid.okmock.data.provider.*
 import kotlin.concurrent.thread
 
 /**
@@ -12,37 +15,51 @@ import kotlin.concurrent.thread
  */
 class MainActivity : AppCompatActivity() {
 
-  private val mMockTestClasses = listOf<Any>(
-    StaticFieldProvider::class.java.newInstance(),
-//    PrimitiveDataProvider::class.java.newInstance(),
-//    BeanMockDataTest::class.java.newInstance(),
-//    ArrayMockDataTest::class.java.newInstance(),
-//    CollectionMockDataTest::class.java.newInstance()
+  private val mSpinner: Spinner by lazy { findViewById(R.id.spinner) }
+
+  private val mTextView: TextView by lazy { findViewById(R.id.textView) }
+
+  private val mMockTestClasses = mapOf<String, Any>(
+    "Bean" to BeanMockDataProvider::class.java.newInstance(),
+    "Primitive Type" to PrimitiveDataProvider::class.java.newInstance(),
+    "Static Field" to StaticFieldProvider::class.java.newInstance(),
+    "Array" to ArrayMockDataProvider::class.java.newInstance(),
+    "Collection" to CollectionMockDataProvider::class.java.newInstance()
   )
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
-    thread {
-      val fields = mutableListOf<Pair<String, String>>()
-      mMockTestClasses.map { (it to it.javaClass.declaredFields) }
-        .forEach {
-          for (field in it.second) {
-            fields.add(field.name to field.get(it.first).toDetailString())
-          }
-        }
 
+    val names = mMockTestClasses.map { it.key }
+    mSpinner.adapter = ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, names).apply {
+      setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+    }
+
+    mSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+      override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        setSelected(names[position])
+      }
+
+      override fun onNothingSelected(parent: AdapterView<*>?) {}
+    }
+  }
+
+  private fun setSelected(name: String) {
+    thread {
+      val clazz = mMockTestClasses[name]!!
       val strings = StringBuilder()
-      for (field in fields) {
-        val fieldName = field.first
-        val fieldValue = field.second
+      clazz.javaClass.declaredFields.forEach { field ->
+        val fieldName = field.name
+        val fieldValue = field.get(clazz)
         strings.append("$fieldName: $fieldValue")
         strings.appendLine()
         strings.appendLine()
       }
       runOnUiThread {
-        findViewById<TextView>(R.id.textView).text = strings.toString()
+        mTextView.text = strings.toString()
       }
     }
   }
+
 }

@@ -1,7 +1,9 @@
-package com.airsaid.okmock.data;
+package com.airsaid.okmock.data.provider;
 
 import com.airsaid.okmock.OKMock;
 import com.airsaid.okmock.api.Mock;
+import com.airsaid.okmock.data.Group;
+import com.airsaid.okmock.data.Person;
 
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
