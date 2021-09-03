@@ -17,10 +17,7 @@
 package com.airsaid.okmock.plugin.transform
 
 import com.android.SdkConstants
-import com.android.build.api.transform.Format
-import com.android.build.api.transform.QualifiedContent
-import com.android.build.api.transform.Transform
-import com.android.build.api.transform.TransformInvocation
+import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
 import com.android.utils.FileUtils
 import com.google.common.collect.ImmutableSet
@@ -30,6 +27,7 @@ import org.gradle.api.provider.Property
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
@@ -39,79 +37,144 @@ import java.util.zip.ZipOutputStream
  */
 abstract class AbstractTransform(private val project: Project, private val isDebug: Property<Boolean>) : Transform(), TransformHandle {
 
+  private var mStartInvocationTime = 0L
+
   override fun getInputTypes(): MutableSet<QualifiedContent.ContentType> =
     TransformManager.CONTENT_CLASS
 
   override fun getScopes(): MutableSet<in QualifiedContent.Scope> =
     ImmutableSet.of(QualifiedContent.Scope.PROJECT, QualifiedContent.Scope.SUB_PROJECTS)
 
-  override fun isIncremental() = false
+  override fun isIncremental() = true
+
+  override fun isCacheable() = true
+
+  override fun onTransformBefore(invocation: TransformInvocation) {
+    if (isDebug.get()) {
+      mStartInvocationTime = System.nanoTime()
+    }
+  }
 
   override fun transform(transformInvocation: TransformInvocation) {
     super.transform(transformInvocation)
+    log("> Transform isIncremental: ${transformInvocation.isIncremental}")
     if (!transformInvocation.isIncremental) {
       transformInvocation.outputProvider.deleteAll()
     }
 
     onTransformBefore(transformInvocation)
 
-    transformInvocation.inputs.forEach { input ->
-      input.jarInputs.forEach { jarInput ->
+    for (input in transformInvocation.inputs) {
+      for (jarInput in input.jarInputs) {
+        log("+---------------------------------------")
+        log("| Start handler input jar: ${jarInput.file.canonicalPath}")
+
+        if (transformInvocation.isIncremental) {
+          log("| Skip: ${jarInput.status}")
+          if (jarInput.status == Status.NOTCHANGED) {
+            continue
+          } else if (jarInput.status == Status.REMOVED) {
+            jarInput.file.delete()
+            continue
+          }
+        }
+
         val inputJar = jarInput.file
         val outputJar = transformInvocation.outputProvider.getContentLocation(
           jarInput.name, jarInput.contentTypes, jarInput.scopes, Format.JAR
         )
-        log("+---------------------------------------")
-        log("| Start handler input jar: ${inputJar.canonicalPath}")
-        val jarInputClass: HashSet<Pair<String, ByteArray>> = hashSetOf()
-        ZipInputStream(FileInputStream(inputJar)).use { zipInputStream ->
-          var entry: ZipEntry? = zipInputStream.nextEntry
-          while (entry != null) {
-            if (!entry.isDirectory && entry.name.endsWith(SdkConstants.DOT_CLASS)) {
-              log("| ${entry.name}")
-              val outputBytes = onTransform(transformInvocation, zipInputStream.readBytes())
-              jarInputClass.add(entry.name to outputBytes)
-            }
-            entry = zipInputStream.nextEntry
-          }
-        }
-
-        Files.createParentDirs(outputJar)
-        ZipOutputStream(FileOutputStream(outputJar)).use { zos ->
-          jarInputClass.forEach {
-            val entryName = it.first
-            val outputBytes = it.second
-            zos.putNextEntry(ZipEntry(entryName))
-            zos.write(outputBytes)
-          }
-        }
+        handlerJar(transformInvocation, inputJar, outputJar)
       }
 
-      input.directoryInputs.forEach { dirInput ->
-        val inputDir = dirInput.file
+      for (dirInput in input.directoryInputs) {
         log("+---------------------------------------")
-        log("| Start handler input dir: ${inputDir.canonicalPath}")
+        log("| Start handler input dir: ${dirInput.file.canonicalPath}")
+
+        val inputDir = dirInput.file
         val outputDir = transformInvocation.outputProvider.getContentLocation(
-          dirInput.name,
-          dirInput.contentTypes, dirInput.scopes, Format.DIRECTORY
+          dirInput.name, dirInput.contentTypes, dirInput.scopes, Format.DIRECTORY
         )
-        FileUtils.getAllFiles(inputDir).filter {
-          it?.extension?.equals(SdkConstants.EXT_CLASS) ?: false
-        }.toHashSet().forEach { inputFile ->
-          log("| ${inputFile.canonicalPath}")
-          val outputBytes = onTransform(transformInvocation, inputFile.inputStream().readBytes())
 
-          val outputFile = File(outputDir, FileUtils.relativePossiblyNonExistingPath(inputFile, inputDir))
+        if (transformInvocation.isIncremental) {
+          if (dirInput.changedFiles.isEmpty()) {
+            log("| Skip: changedFiles is empty!")
+            continue
+          }
 
-          Files.createParentDirs(outputFile)
-          FileOutputStream(outputFile).use {
-            it.write(outputBytes)
+          dirInput.changedFiles.forEach { (changedFile, state) ->
+            if (state == Status.REMOVED) {
+              log("| changedFile: ${changedFile.canonicalPath}, state: $state")
+              changedFile.delete()
+            } else {
+              changedFile.filterTransformFile { inputFile ->
+                log("| changedFile: ${inputFile.canonicalPath}, state: $state")
+                val outputFile = File(outputDir, FileUtils.relativePossiblyNonExistingPath(inputFile, inputDir))
+                inputFile.transform(transformInvocation, outputFile)
+              }
+            }
+          }
+        } else {
+          inputDir.filterTransformFile { inputFile ->
+            log("| ${inputFile.canonicalPath}")
+            val outputFile = File(outputDir, FileUtils.relativePossiblyNonExistingPath(inputFile, inputDir))
+            inputFile.transform(transformInvocation, outputFile)
           }
         }
       }
     }
 
     onTransformAfter(transformInvocation)
+  }
+
+  private fun handlerJar(invocation: TransformInvocation, inputJar: File, outputJar: File) {
+    val jarInputClass: HashSet<Pair<String, ByteArray>> = hashSetOf()
+    ZipInputStream(FileInputStream(inputJar)).use { zipInputStream ->
+      var entry: ZipEntry? = zipInputStream.nextEntry
+      while (entry != null) {
+        if (!entry.isDirectory && entry.name.endsWith(SdkConstants.DOT_CLASS)) {
+          log("| ${entry.name}")
+          val outputBytes = onTransform(invocation, zipInputStream.readBytes())
+          jarInputClass.add(entry.name to outputBytes)
+        }
+        entry = zipInputStream.nextEntry
+      }
+    }
+
+    Files.createParentDirs(outputJar)
+    ZipOutputStream(FileOutputStream(outputJar)).use { zos ->
+      jarInputClass.forEach {
+        val entryName = it.first
+        val outputBytes = it.second
+        zos.putNextEntry(ZipEntry(entryName))
+        zos.write(outputBytes)
+      }
+    }
+  }
+
+  private fun File.filterTransformFile(filter: (file: File) -> Unit) {
+    if (isDirectory) {
+      FileUtils.getAllFiles(this)
+        .toHashSet()
+        .forEach { it.filterTransformFile(filter) }
+    } else {
+      filter(this)
+    }
+  }
+
+  private fun File.transform(invocation: TransformInvocation, output: File) {
+    Files.createParentDirs(output)
+    if (extension == SdkConstants.EXT_CLASS) {
+      onTransform(invocation, readBytes()).write(output)
+    } else {
+      copyTo(output, true)
+    }
+  }
+
+  private fun ByteArray.write(output: File) =
+    FileOutputStream(output).use { it.write(this) }
+
+  override fun onTransformAfter(invocation: TransformInvocation) {
+    log("+------ Execution time: ${(System.nanoTime() - mStartInvocationTime) / 1000 / 1000}ms ------")
   }
 
   private fun log(message: String) {

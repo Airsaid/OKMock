@@ -37,8 +37,6 @@ class OKMockTransform(project: Project, extension: OKMockExtension) : AbstractTr
 
   override fun getName() = OKMockPlugin.PLUGIN_NAME
 
-  override fun onTransformBefore(invocation: TransformInvocation) {}
-
   override fun onTransform(invocation: TransformInvocation, bytecode: ByteArray): ByteArray {
     val cr = ClassReader(bytecode)
     val cw = ClassWriter(ClassWriter.COMPUTE_MAXS)
@@ -46,8 +44,6 @@ class OKMockTransform(project: Project, extension: OKMockExtension) : AbstractTr
     cr.accept(cv, 0)
     return cw.toByteArray()
   }
-
-  override fun onTransformAfter(invocation: TransformInvocation) {}
 
   private class OKMockClassAdapter(
     private val annotations: List<Class<*>>,
