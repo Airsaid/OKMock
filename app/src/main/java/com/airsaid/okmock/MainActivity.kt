@@ -8,6 +8,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.airsaid.okmock.data.provider.*
+import com.airsaid.okmock.util.toDetailString
 import kotlin.concurrent.thread
 
 /**
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
       val strings = StringBuilder()
       clazz.javaClass.declaredFields.forEach { field ->
         val fieldName = field.name
-        val fieldValue = field.get(clazz)
+        val fieldValue = field.get(clazz).toDetailString()
         strings.append("$fieldName: $fieldValue")
         strings.appendLine()
         strings.appendLine()
