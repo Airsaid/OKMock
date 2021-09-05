@@ -25,7 +25,8 @@ class MainActivity : AppCompatActivity() {
     "Primitive Type" to PrimitiveDataProvider::class.java.newInstance(),
     "Static Field" to StaticFieldProvider::class.java.newInstance(),
     "Array" to ArrayMockDataProvider::class.java.newInstance(),
-    "Collection" to CollectionMockDataProvider::class.java.newInstance()
+    "Collection" to CollectionMockDataProvider::class.java.newInstance(),
+    "Enum" to EnumDataProvider::class.java.newInstance(),
   )
 
   override fun onCreate(savedInstanceState: Bundle?) {
