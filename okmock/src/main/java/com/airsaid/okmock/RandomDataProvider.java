@@ -17,6 +17,7 @@
 package com.airsaid.okmock;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -103,6 +104,16 @@ class RandomDataProvider {
 
   public static Object getRandomStringArray(Object array) {
     return getRandomArrayData(array, RandomDataProvider::getRandomString);
+  }
+
+  public static Object getRandomEnumInstance(Class<?> clazz) {
+    try {
+      Object arrayInstance = clazz.getMethod("values").invoke(null);
+      return Array.get(arrayInstance, nextInt(0, Array.getLength(arrayInstance)));
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   public static int nextInt(final int startInclusive, final int endExclusive) {

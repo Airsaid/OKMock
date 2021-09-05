@@ -19,8 +19,10 @@ package com.airsaid.okmock;
 import com.airsaid.okmock.api.MockValue;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,6 +70,9 @@ public class OKMock {
     char[] chars = signature.toCharArray();
     for (int i = 0; i < chars.length; i++) {
       char ch = chars[i];
+      if (ch == '+' || ch == '-') { // ignore wildcardIndicator
+        continue;
+      }
       if (ch == '<') {
         result.add(className.toString());
         result.add(String.valueOf(ch));
@@ -233,6 +238,9 @@ public class OKMock {
   @SuppressWarnings(value = "unchecked")
   private static <T> T getBean(Class<T> clazz) {
     Constructor<?> constructor = getMaxParamsConstructor(clazz);
+    if (constructor == null) { // maybe enum class
+      return (T) RandomDataProvider.getRandomEnumInstance(clazz);
+    }
     Type[] parameterTypes = constructor.getGenericParameterTypes();
     Annotation[][] parameterAnnotations = constructor.getParameterAnnotations();
     try {
