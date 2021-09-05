@@ -10,6 +10,8 @@ import java.util.LinkedList;
 
 import static org.junit.Assert.*;
 
+import com.airsaid.okmock.data.Color;
+
 /**
  * @author airsaid
  */
@@ -108,5 +110,14 @@ public class OKMockTest {
     assertEquals(HashMap.class, mapValue.getClass());
     assertEquals(Integer.class, ((HashMap<?, ?>) mapValue).keySet().iterator().next().getClass());
     assertEquals(String.class, ((HashMap<?, ?>) mapValue).values().iterator().next().getClass());
+  }
+
+  @Test
+  public void getMockDataByEnum() {
+    assertTrue(OKMock.getMockData("Lcom.airsaid.okmock.data.Color;") instanceof Color);
+
+    Object colorList = OKMock.getMockData("Ljava/util/List<Lcom.airsaid.okmock.data.Color;>;");
+    assertEquals(ArrayList.class, colorList.getClass());
+    assertTrue(((ArrayList<?>) colorList).get(0) instanceof Color);
   }
 }
