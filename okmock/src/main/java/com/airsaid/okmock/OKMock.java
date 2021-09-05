@@ -131,17 +131,21 @@ public class OKMock {
     } else if (String.class.isAssignableFrom(componentType)) {
       return isArray ? RandomDataProvider.getRandomShortArray(array) : RandomDataProvider.getRandomString();
     } else if (List.class.isAssignableFrom(componentType)) {
-      List<Object> listData = getListData(componentType, formatSignatures, start, end);
-      return isArray ? ArrayUtils.fillArrayData(array, listData) : listData;
+      return isArray ? ArrayUtils.fillArrayData(array, () ->
+          getListData(componentType, formatSignatures, start, end)) :
+          getListData(componentType, formatSignatures, start, end);
     } else if (Set.class.isAssignableFrom(componentType)) {
-      Set<Object> setData = getSetData(componentType, formatSignatures, start, end);
-      return isArray ? ArrayUtils.fillArrayData(array, setData) : setData;
+      return isArray ? ArrayUtils.fillArrayData(array, () ->
+          getSetData(componentType, formatSignatures, start, end)) :
+          getSetData(componentType, formatSignatures, start, end);
     } else if (Map.class.isAssignableFrom(componentType)) {
-      Map<Object, Object> mapData = getMapData(componentType, formatSignatures, start, end);
-      return isArray ? ArrayUtils.fillArrayData(array, mapData) : mapData;
+      return isArray ? ArrayUtils.fillArrayData(array, () ->
+          getMapData(componentType, formatSignatures, start, end)) :
+          getMapData(componentType, formatSignatures, start, end);
     } else {
-      Object bean = getBean(componentType);
-      return isArray ? ArrayUtils.fillArrayData(array, bean) : bean;
+      return isArray ? ArrayUtils.fillArrayData(array, () ->
+          getBean(componentType)) :
+          getBean(componentType);
     }
   }
 

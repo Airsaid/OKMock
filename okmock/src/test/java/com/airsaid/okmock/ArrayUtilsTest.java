@@ -44,7 +44,7 @@ public class ArrayUtilsTest {
   @Test
   public void fillArrayData() {
     Object array = Array.newInstance(String.class, 2);
-    ArrayUtils.fillArrayData(array, "airsaid");
+    ArrayUtils.fillArrayData(array, () -> "airsaid");
     int length = Array.getLength(array);
     assertEquals(2, length);
     assertEquals("airsaid", Array.get(array, 0));

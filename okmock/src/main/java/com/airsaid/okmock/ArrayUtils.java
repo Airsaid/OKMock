@@ -60,20 +60,25 @@ class ArrayUtils {
   /**
    * Fills the specified array object with the specified value object.
    *
-   * @param array the specified array object.
-   * @param value the specified value object.
+   * @param array    the specified array object.
+   * @param provider the specified functional interface of value provider.
    * @return the array object is filled.
    */
-  public static Object fillArrayData(Object array, Object value) {
+  public static Object fillArrayData(Object array, ArrayDataProvider provider) {
     int length = Array.getLength(array);
     for (int i = 0; i < length; i++) {
       Object elem = Array.get(array, i);
       if (elem != null && elem.getClass().isArray()) {
-        Array.set(array, i, fillArrayData(elem, value));
+        Array.set(array, i, fillArrayData(elem, provider));
       } else {
-        Array.set(array, i, value);
+        Array.set(array, i, provider.getArrayData());
       }
     }
     return array;
+  }
+
+  @FunctionalInterface
+  public interface ArrayDataProvider {
+    Object getArrayData();
   }
 }

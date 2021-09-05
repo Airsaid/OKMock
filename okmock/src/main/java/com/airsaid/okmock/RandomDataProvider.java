@@ -39,7 +39,7 @@ class RandomDataProvider {
   }
 
   public static Object getRandomBooleanArray(Object array) {
-    return getRandomArrayData(array, RandomDataProvider::getRandomBoolean);
+    return ArrayUtils.fillArrayData(array, RandomDataProvider::getRandomBoolean);
   }
 
   public static char getRandomChar() {
@@ -47,7 +47,7 @@ class RandomDataProvider {
   }
 
   public static Object getRandomCharArray(Object array) {
-    return getRandomArrayData(array, RandomDataProvider::getRandomChar);
+    return ArrayUtils.fillArrayData(array, RandomDataProvider::getRandomChar);
   }
 
   public static byte getRandomByte() {
@@ -55,7 +55,7 @@ class RandomDataProvider {
   }
 
   public static Object getRandomByteArray(Object array) {
-    return getRandomArrayData(array, RandomDataProvider::getRandomByte);
+    return ArrayUtils.fillArrayData(array, RandomDataProvider::getRandomByte);
   }
 
   public static short getRandomShort() {
@@ -63,7 +63,7 @@ class RandomDataProvider {
   }
 
   public static Object getRandomShortArray(Object array) {
-    return getRandomArrayData(array, RandomDataProvider::getRandomShort);
+    return ArrayUtils.fillArrayData(array, RandomDataProvider::getRandomShort);
   }
 
   public static int getRandomInt() {
@@ -71,7 +71,7 @@ class RandomDataProvider {
   }
 
   public static Object getRandomIntArray(Object array) {
-    return getRandomArrayData(array, RandomDataProvider::getRandomInt);
+    return ArrayUtils.fillArrayData(array, RandomDataProvider::getRandomInt);
   }
 
   public static float getRandomFloat() {
@@ -79,7 +79,7 @@ class RandomDataProvider {
   }
 
   public static Object getRandomFloatArray(Object array) {
-    return getRandomArrayData(array, RandomDataProvider::getRandomFloat);
+    return ArrayUtils.fillArrayData(array, RandomDataProvider::getRandomFloat);
   }
 
   public static long getRandomLong() {
@@ -87,7 +87,7 @@ class RandomDataProvider {
   }
 
   public static Object getRandomLongArray(Object array) {
-    return getRandomArrayData(array, RandomDataProvider::getRandomLong);
+    return ArrayUtils.fillArrayData(array, RandomDataProvider::getRandomLong);
   }
 
   public static double getRandomDouble() {
@@ -95,7 +95,7 @@ class RandomDataProvider {
   }
 
   public static Object getRandomDoubleArray(Object array) {
-    return getRandomArrayData(array, RandomDataProvider::getRandomDouble);
+    return ArrayUtils.fillArrayData(array, RandomDataProvider::getRandomDouble);
   }
 
   public static String getRandomString() {
@@ -103,7 +103,7 @@ class RandomDataProvider {
   }
 
   public static Object getRandomStringArray(Object array) {
-    return getRandomArrayData(array, RandomDataProvider::getRandomString);
+    return ArrayUtils.fillArrayData(array, RandomDataProvider::getRandomString);
   }
 
   public static Object getRandomEnumInstance(Class<?> clazz) {
@@ -122,10 +122,6 @@ class RandomDataProvider {
     }
 
     return startInclusive + random().nextInt(endExclusive - startInclusive);
-  }
-
-  private static Object getRandomArrayData(Object array, ArrayDataProvider provider) {
-    return fillArrayData(array, provider);
   }
 
   private static String randomString(int count, int start, int end, final boolean letters, final boolean numbers,
@@ -202,23 +198,5 @@ class RandomDataProvider {
       }
     }
     return builder.toString();
-  }
-
-  private static Object fillArrayData(Object array, ArrayDataProvider provider) {
-    int length = Array.getLength(array);
-    for (int i = 0; i < length; i++) {
-      Object elem = Array.get(array, i);
-      if (elem != null && elem.getClass().isArray()) {
-        Array.set(array, i, fillArrayData(elem, provider));
-      } else {
-        Array.set(array, i, provider.getArrayData());
-      }
-    }
-    return array;
-  }
-
-  @FunctionalInterface
-  private interface ArrayDataProvider {
-    Object getArrayData();
   }
 }
