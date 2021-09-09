@@ -1,7 +1,7 @@
 [![Version](https://img.shields.io/maven-central/v/com.airsaid/okmock)](https://plugins.gradle.org/plugin/com.airsaid.okmock)
 
 # OKMock
-:balloon: OKMock 是一个用与 Android 上快速填充字段数据的 Gradle Plugin。
+:balloon: OKMock 是一个 Android 上快速填充字段数据的 Gradle Plugin。
 
 
 # 使用
@@ -57,7 +57,8 @@ public class Person {
 
 # 更多示例
 ```
-@Mock
+// 通过 randomSizeRange 属性可以设置数据集的大小
+@Mock(randomSizeRange = [1, 100])
 public List<Person> personList;
 
 @Mock
@@ -81,7 +82,6 @@ public Map<Integer, Person>[] personMapArray;
 @Mock
 public Map<Integer, List<Person>> personMapNested;
 ```
-
 
 # License
 ```

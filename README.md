@@ -56,7 +56,8 @@ public class Person {
 
 # More Examples
 ```
-@Mock
+// The size of the data set can be set by randomSizeRange attribute
+@Mock(randomSizeRange = [1, 100])
 public List<Person> personList;
 
 @Mock

@@ -16,7 +16,7 @@ dependencies {
 pluginBundle {
     website = 'https://github.com/Airsaid/OKMock'
     vcsUrl = 'https://github.com/Airsaid/OKMock'
-    tags = ['Mock', 'Java', 'Android', 'Annotation']
+    tags = ['Mock', 'Java', 'Android', 'Annotation', 'ASM', 'Transform']
 }
 
 java {

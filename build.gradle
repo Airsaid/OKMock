@@ -2,7 +2,7 @@
 buildscript {
     ext.kotlin_version = "1.5.10"
     ext.agp_version = "4.1.1"
-    ext.okmock_version = "1.0.2"
+    ext.okmock_version = "1.0.3"
     ext.isReleaseBuild = !okmock_version.endsWith('-SNAPSHOT')
     repositories {
         if (!isReleaseBuild) {
@@ -23,7 +23,7 @@ buildscript {
 
 subprojects {
     group('com.airsaid')
-    version("1.0.2")
+    version("1.0.3")
 }
 
 allprojects {
