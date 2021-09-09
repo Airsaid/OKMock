@@ -15,120 +15,120 @@ public class ArrayMockDataProvider {
   @Mock
   public boolean[] booleanArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public boolean[][] booleanArrayDimension;
 
   @Mock
   public Boolean[] booleanWrapArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public Boolean[][] booleanWrapArrayDimension;
 
   @Mock
   public char[] charArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public char[][] charArrayDimension;
 
   @Mock
   public Character[] charWrapArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public Character[][] charWrapArrayDimension;
 
   @Mock
   public byte[] byteArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public byte[][] byteArrayDimension;
 
   @Mock
   public Byte[] byteWrapArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public Byte[][] byteWrapArrayDimension;
 
   @Mock
   public short[] shortArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public short[][] shortArrayDimension;
 
   @Mock
   public Short[] shortWrapArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public Short[][] shortWrapArrayDimension;
 
   @Mock
   public int[] intArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public int[][] intArrayDimension;
 
   @Mock
   public Integer[] intWrapArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public Integer[][] intWrapArrayDimension;
 
   @Mock
   public float[] floatArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public float[][] floatArrayDimension;
 
   @Mock
   public Float[] floatWrapArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public Float[][] floatWrapArrayDimension;
 
   @Mock
   public long[] longArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public long[][] longArrayDimension;
 
   @Mock
   public Long[] longWrapArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public Long[][] longWrapArrayDimension;
 
   @Mock
   public double[] doubleArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public double[][] doubleArrayDimension;
 
   @Mock
   public Double[] doubleWrapArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public Double[][] doubleWrapArrayDimension;
 
   @Mock
   public Person[] personArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public Person[][] personArrayDimension;
 
   @Mock
   public Group[] groupArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public Group[][] groupArrayDimension;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public List<Person>[] listArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public List<Person>[][] listArrayDimension;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public Map<Integer, Person>[] mapArray;
 
-  @Mock
+  @Mock(randomSizeRange = {1, 10})
   public Map<Integer, Person>[][] mapArrayDimension;
 }

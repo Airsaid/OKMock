@@ -21,6 +21,8 @@ import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.objectweb.asm.MethodVisitor
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 
 fun Project.getExtension(): BaseExtension {
@@ -105,4 +107,16 @@ fun Type.toPrimitiveWrapType(): Type {
     return Type.getType("Ljava/lang/Double;")
   }
   throw IllegalArgumentException("$this is not a primitive type.")
+}
+
+fun MethodVisitor.visitIntValue(value: Int) {
+  if (value >= -1 && value <= 5) {
+    visitInsn(value + 3)
+  } else if (value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE) {
+    visitIntInsn(Opcodes.BIPUSH, value)
+  } else if (value >= Short.MIN_VALUE && value <= Short.MAX_VALUE) {
+    visitIntInsn(Opcodes.SIPUSH, value)
+  } else {
+    visitLdcInsn(value)
+  }
 }

@@ -74,7 +74,7 @@ class TypeUtils {
     try {
       Class<?> clazz = isPrimitiveType(className) ? getClass(className) : Class.forName(className);
       if (isArray) {
-        return ArrayUtils.getArray(clazz, arrayDimension, 0, 0).getClass();
+        return ArrayUtils.getArray(clazz, arrayDimension, 0).getClass();
       }
       return clazz;
     } catch (ClassNotFoundException e) {

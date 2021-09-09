@@ -21,10 +21,13 @@ import com.airsaid.okmock.plugin.OKMockPlugin
 import com.airsaid.okmock.plugin.constant.Constants.GET_MOCK_DATA_METHOD_DESCRIPTOR
 import com.airsaid.okmock.plugin.constant.Constants.GET_MOCK_DATA_METHOD_NAME
 import com.airsaid.okmock.plugin.constant.Constants.OK_MOCK_CLASS_NAME
+import com.airsaid.okmock.plugin.constant.Constants.OK_MOCK_CONFIG_NAME
+import com.airsaid.okmock.plugin.constant.Constants.RANDOM_SIZE_RANGE_NAME
 import com.airsaid.okmock.plugin.extension.OKMockExtension
 import com.airsaid.okmock.plugin.model.FieldInfo
 import com.airsaid.okmock.plugin.util.isPrimitiveType
 import com.airsaid.okmock.plugin.util.toPrimitiveWrapType
+import com.airsaid.okmock.plugin.util.visitIntValue
 import com.android.build.api.transform.TransformInvocation
 import org.gradle.api.Project
 import org.objectweb.asm.*
@@ -106,12 +109,33 @@ class OKMockTransform(project: Project, extension: OKMockExtension) : AbstractTr
       fv: FieldVisitor
     ) : FieldVisitor(ASM9, fv) {
       override fun visitAnnotation(descriptor: String?, visible: Boolean): AnnotationVisitor {
-        annotations.forEach { annotation ->
-          if (Type.getDescriptor(annotation) == descriptor) {
-            results.add(field)
+        val av = super.visitAnnotation(descriptor, visible)
+        if (av != null) {
+          annotations.forEach { annotation ->
+            if (Type.getDescriptor(annotation) == descriptor) {
+              results.add(field)
+              return AnnotationParamsAdapter(field, av)
+            }
           }
         }
-        return super.visitAnnotation(descriptor, visible)
+        return av
+      }
+
+      private class AnnotationParamsAdapter(
+        private val field: FieldInfo,
+        annotationVisitor: AnnotationVisitor?
+      ) : AnnotationVisitor(ASM9, annotationVisitor) {
+        override fun visitAnnotation(name: String?, descriptor: String?): AnnotationVisitor {
+          return super.visitAnnotation(name, descriptor)
+        }
+
+        override fun visit(name: String?, value: Any?) {
+          if (name == RANDOM_SIZE_RANGE_NAME && value is IntArray) {
+            field.randomSizeRange[0] = value[0]
+            field.randomSizeRange[1] = value[1]
+          }
+          super.visit(name, value)
+        }
       }
     }
 
@@ -139,6 +163,19 @@ class OKMockTransform(project: Project, extension: OKMockExtension) : AbstractTr
             mv.visitVarInsn(ALOAD, 0)
           }
           mv.visitLdcInsn(getMethodParams(fieldInfo))
+          mv.visitTypeInsn(NEW, OK_MOCK_CONFIG_NAME)
+          mv.visitInsn(DUP)
+          mv.visitInsn(ICONST_2)
+          mv.visitIntInsn(NEWARRAY, T_INT)
+          mv.visitInsn(DUP)
+          mv.visitInsn(ICONST_0)
+          mv.visitIntValue(fieldInfo.randomSizeRange[0])
+          mv.visitInsn(IASTORE)
+          mv.visitInsn(DUP)
+          mv.visitInsn(ICONST_1)
+          mv.visitIntValue(fieldInfo.randomSizeRange[1])
+          mv.visitInsn(IASTORE)
+          mv.visitMethodInsn(INVOKESPECIAL, OK_MOCK_CONFIG_NAME, "<init>", "([I)V", false)
           mv.visitMethodInsn(
             INVOKESTATIC, OK_MOCK_CLASS_NAME,
             GET_MOCK_DATA_METHOD_NAME, GET_MOCK_DATA_METHOD_DESCRIPTOR, false

@@ -8,10 +8,10 @@ import com.airsaid.okmock.data.Color
  */
 class EnumDataProvider {
 
-  @Mock
+  @Mock(randomSizeRange = [2, 2])
   lateinit var color: Color
 
-  @Mock
+  @Mock(randomSizeRange = [10, 20])
   lateinit var colorArray: Array<Color>
 
   @Mock

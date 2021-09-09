@@ -1,11 +1,11 @@
 package com.airsaid.okmock;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Test;
 
 import java.lang.reflect.Array;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 /**
  * @author airsaid
@@ -14,7 +14,7 @@ public class ArrayUtilsTest {
 
   @Test
   public void getArray() {
-    Object array = ArrayUtils.getArray(String.class, 1, 3, 3);
+    Object array = ArrayUtils.getArray(String.class, 1, 3);
     int length = Array.getLength(array);
     assertEquals(3, length);
 
@@ -25,8 +25,8 @@ public class ArrayUtilsTest {
   }
 
   @Test
-  public void gArray2By2Dimension() {
-    Object array = ArrayUtils.getArray(String.class, 2, 1, 1);
+  public void getArray2By2Dimension() {
+    Object array = ArrayUtils.getArray(String.class, 2, 1);
     assertEquals(1, Array.getLength(array));
     assertEquals(String[].class, Array.get(array, 0).getClass());
     assertEquals(1, Array.getLength(Array.get(array, 0)));

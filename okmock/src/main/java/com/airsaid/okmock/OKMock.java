@@ -19,10 +19,8 @@ package com.airsaid.okmock;
 import com.airsaid.okmock.api.MockValue;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +40,32 @@ import java.util.Set;
  * @see com.airsaid.okmock.api.Mock
  */
 public class OKMock {
+
+  private static final OKMockConfig DEFAULT_CONFIG = new OKMockConfig(new int[]{1, 50});
+
+  private static OKMockConfig sConfig = DEFAULT_CONFIG;
+
+  /**
+   * Returns the corresponding mock object through the specified type signature and config object.
+   * <p>
+   * For example, if {@code signature} is {@code Z} descriptor, then return {@link Boolean} mock object.
+   * if {@code signature} is an {@code [I} descriptor, then return {@link Integer} array mock object.
+   * if {@code signature} is an {@code Ljava/lang/String;} descriptor, then return {@link String} mock object.
+   * if {@code signature} is an {@code [Ljava/lang/Boolean;} descriptor, then return {@link Boolean} array mock object.
+   * if {@code signature} is an {@code Ljava/util/List<Ljava/lang/String;>;} signature,
+   * then return {@link List} mock object, and contains random {@link String} data.
+   * <p>
+   * The data is completely random by default, If you need custom data, you can view the {@link MockValue} annotation.
+   *
+   * @param signature the type descriptor or signature.
+   * @param config    the configuration object for generate mock data.
+   * @return the mock object corresponding to the given type descriptor or signature.
+   * @see MockValue
+   */
+  public static Object getMockData(String signature, OKMockConfig config) {
+    sConfig = config;
+    return getMockData(signature);
+  }
 
   /**
    * Returns the corresponding mock object through the specified type signature.
@@ -110,7 +134,7 @@ public class OKMock {
     Class<?> sourceClass = TypeUtils.getClass(descriptor);
     boolean isArray = Objects.requireNonNull(sourceClass).isArray();
     Class<?> componentType = TypeUtils.getOriginalComponentType(sourceClass);
-    Object array = isArray ? ArrayUtils.getArray(componentType, ArrayUtils.getArrayDimension(sourceClass), 1, 50) : null;
+    Object array = isArray ? ArrayUtils.getArray(componentType, ArrayUtils.getArrayDimension(sourceClass), sConfig.getSize()) : null;
 
     if (Boolean.class.isAssignableFrom(componentType) || Boolean.TYPE == componentType) {
       return isArray ? RandomDataProvider.getRandomBooleanArray(array) : RandomDataProvider.getRandomBoolean();
@@ -220,7 +244,7 @@ public class OKMock {
   }
 
   private static void randomForEach(IntConsumer consumer) {
-    for (int i = 0; i <= RandomDataProvider.nextInt(1, 50); i++) {
+    for (int i = 0; i <= sConfig.getSize(); i++) {
       consumer.accept(i);
     }
   }

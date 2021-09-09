@@ -28,10 +28,41 @@ package com.airsaid.okmock.plugin.model
  *     generic types.
  * @param value the field's value. This parameter, which may be null if the
  *     field does not have an value.
+ * @param randomSizeRange the parameter of the [com.airsaid.okmock.OKMock] annotation on the field,
+ *     used to specify random size range for mock data. default size range is 1 until 50.
  *
  * @author airsaid
  */
 data class FieldInfo(
   val owner: String, val access: Int, val name: String,
-  val descriptor: String, val signature: String?, val value: Any?
-)
+  val descriptor: String, val signature: String?, val value: Any?,
+  val randomSizeRange: IntArray = intArrayOf(1, 50)
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as FieldInfo
+
+    if (owner != other.owner) return false
+    if (access != other.access) return false
+    if (name != other.name) return false
+    if (descriptor != other.descriptor) return false
+    if (signature != other.signature) return false
+    if (value != other.value) return false
+    if (!randomSizeRange.contentEquals(other.randomSizeRange)) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = owner.hashCode()
+    result = 31 * result + access
+    result = 31 * result + name.hashCode()
+    result = 31 * result + descriptor.hashCode()
+    result = 31 * result + (signature?.hashCode() ?: 0)
+    result = 31 * result + (value?.hashCode() ?: 0)
+    result = 31 * result + randomSizeRange.contentHashCode()
+    return result
+  }
+}

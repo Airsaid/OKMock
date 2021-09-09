@@ -22,7 +22,11 @@ package com.airsaid.okmock.plugin.constant
 object Constants {
   const val OK_MOCK_CLASS_NAME = "com/airsaid/okmock/OKMock"
 
+  const val OK_MOCK_CONFIG_NAME = "com/airsaid/okmock/OKMockConfig"
+
   const val GET_MOCK_DATA_METHOD_NAME = "getMockData"
 
-  const val GET_MOCK_DATA_METHOD_DESCRIPTOR = "(Ljava/lang/String;)Ljava/lang/Object;"
+  const val GET_MOCK_DATA_METHOD_DESCRIPTOR = "(Ljava/lang/String;Lcom/airsaid/okmock/OKMockConfig;)Ljava/lang/Object;"
+
+  const val RANDOM_SIZE_RANGE_NAME = "randomSizeRange"
 }

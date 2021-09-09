@@ -26,18 +26,17 @@ import java.lang.reflect.Array;
 class ArrayUtils {
 
   /**
-   * Creates a new array with the specified component type and random length range.
+   * Creates a new array with the specified component type and size.
    *
-   * @param componentType  the {@code Class} object representing the component type of the new array.
-   * @param dimension      dimension of the array.
-   * @param startInclusive the start size of the random length of the array.
-   * @param endExclusive   the end size of the random length of the array.
+   * @param componentType the {@code Class} object representing the component type of the new array.
+   * @param dimension     dimension of the array.
+   * @param size          default size of the array.
    * @return the array object.
    */
-  public static Object getArray(Class<?> componentType, int dimension, int startInclusive, int endExclusive) {
+  public static Object getArray(Class<?> componentType, int dimension, int size) {
     int[] arrayDimensions = new int[dimension];
     for (int i = 0; i < dimension; i++) {
-      arrayDimensions[i] = RandomDataProvider.nextInt(startInclusive, endExclusive);
+      arrayDimensions[i] = size;
     }
     return Array.newInstance(componentType, arrayDimensions);
   }
