@@ -1,8 +1,10 @@
+**English** | [简体中文](README_CN.md)
+
 [![Version](https://img.shields.io/maven-central/v/com.airsaid/okmock)](https://plugins.gradle.org/plugin/com.airsaid.okmock)
 ![ci workflow](https://github.com/Airsaid/OKMock/actions/workflows/android.yml/badge.svg)
 
 # OKMock
-:balloon: OKMock is a Gradle Plugin used to quickly fill field data on Android. ([中文文档](https://github.com/Airsaid/OKMock/blob/main/README_CN.md))
+:balloon: OKMock is a Gradle Plugin used to quickly fill field data on Android.
 
 # Usage
 1. Add the following to your ```build.gradle```:
